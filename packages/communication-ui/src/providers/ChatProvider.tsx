@@ -15,6 +15,7 @@ import {
   CommunicationUiErrorFromError,
   CommunicationUiError
 } from '../types/CommunicationUiError';
+import { chatClientDeclaratify } from '../../../acs-chat-declarative/src';
 
 export type ChatContextType = {
   chatClient?: ChatClient;
@@ -57,7 +58,9 @@ const ChatProviderBase = (props: ChatProviderProps & ErrorHandlingProps): JSX.El
   const [userId, setUserId] = useState<string>(idFromToken);
   const [displayName, setDisplayName] = useState<string>(props.displayName);
   const [chatClient, setChatClient] = useState<ChatClient>(
-    new ChatClient(props.endpointUrl, createAzureCommunicationUserCredential(token, props.refreshTokenCallback))
+    chatClientDeclaratify(
+      new ChatClient(props.endpointUrl, createAzureCommunicationUserCredential(token, props.refreshTokenCallback))
+    )
   );
   const [chatProviderState, setChatProviderState] = useState<number>(CHATPROVIDER_LOADING_STATE);
 
