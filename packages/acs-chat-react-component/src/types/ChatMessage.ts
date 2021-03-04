@@ -1,5 +1,4 @@
 // © Microsoft Corporation. All rights reserved.
-import { ChatMessage } from '@azure/communication-chat';
 
 export enum MessageStatus {
   DELIVERED = 'delivered',
@@ -8,7 +7,12 @@ export enum MessageStatus {
   FAILED = 'failed'
 }
 
-export type ChatMessageWithStatus = ChatMessage & {
-  clientMessageId?: string;
+export type ChatMessage = {
+  messageId?: string;
+  content?: string;
+  // ISO8601 format: `yyyy-MM-ddTHH:mm:ssZ`
+  createdOn?: Date;
+  senderId?: string;
+  senderDisplayName?: string;
   status: MessageStatus;
 };

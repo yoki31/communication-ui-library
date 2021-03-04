@@ -9,7 +9,7 @@ let context: ChatContext;
 
 export const convertChatMessage = (
   message: ChatMessage,
-  status: MessageStatus = 'delivered',
+  status: MessageStatus = MessageStatus.DELIVERED,
   clientMessageId?: string
 ): ChatMessageWithStatus => {
   return {
@@ -45,7 +45,7 @@ const proxyChatThreadClient: ProxyHandler<ChatThreadClient> = {
             content,
             clientMessageId,
             createdOn: undefined,
-            status: 'sending'
+            status: MessageStatus.SENDING
           };
           context.setChatMessage(target.threadId, newMessage);
 
@@ -55,14 +55,15 @@ const proxyChatThreadClient: ProxyHandler<ChatThreadClient> = {
               context.batch(() => {
                 context.setChatMessage(target.threadId, {
                   ...newMessage,
-                  status: 'delivered',
+                  status: MessageStatus.DELIVERED,
+                  createdOn: new Date(),
                   id: result.id
                 });
                 context.setLocalMessageSynced(target.threadId, clientMessageId);
               });
             }
           } else if (result._response.status === Constants.PRECONDITION_FAILED_STATUS_CODE) {
-            context.setChatMessage(target.threadId, { ...newMessage, status: 'failed' });
+            context.setChatMessage(target.threadId, { ...newMessage, status: MessageStatus.FAILED });
           }
           return result;
         };
