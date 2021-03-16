@@ -1,5 +1,4 @@
 dependencies:
-  '@azure/communication-administration': 1.0.0-beta.3
   '@azure/communication-calling': 1.0.0-beta.2
   '@azure/communication-common': 1.0.0-beta.3
   '@azure/communication-identity': 1.0.0-beta.4
@@ -18,6 +17,8 @@ dependencies:
   '@rush-temp/acs-calling-declarative': file:projects/acs-calling-declarative.tgz_prettier@2.0.5+ts-node@9.1.1
   '@rush-temp/acs-calling-sample': file:projects/acs-calling-sample.tgz_570bf42e92a70fb216c5cd4d5ed668ef
   '@rush-temp/acs-chat-declarative': file:projects/acs-chat-declarative.tgz_prettier@2.0.5+ts-node@9.1.1
+  '@rush-temp/acs-chat-declarative-sample': file:projects/acs-chat-declarative-sample.tgz_40b0c9f7a7a0fac66e4b6fcf06de2a42
+  '@rush-temp/acs-chat-react-component': file:projects/acs-chat-react-component.tgz_prettier@2.0.5+webpack-cli@4.5.0
   '@rush-temp/acs-chat-sample': file:projects/acs-chat-sample.tgz_40b0c9f7a7a0fac66e4b6fcf06de2a42
   '@rush-temp/acs-chat-selector': file:projects/acs-chat-selector.tgz_prettier@2.0.5
   '@rush-temp/acs-one-to-one-call-sample': file:projects/acs-one-to-one-call-sample.tgz_570bf42e92a70fb216c5cd4d5ed668ef
@@ -19884,6 +19885,68 @@ packages:
       integrity: sha512-5E76VQJnnmZv7C+QRuzmjP2NQgKU1yvkmVrk1uy88fHJJVl8G1+9F4NyRo+mU7oSPK88urYJ23G8qXpftXD2Bg==
       tarball: file:projects/acs-calling-sample.tgz
     version: 0.0.0
+  file:projects/acs-chat-declarative-sample.tgz_40b0c9f7a7a0fac66e4b6fcf06de2a42:
+    dependencies:
+      '@azure/communication-administration': 1.0.0-beta.4
+      '@azure/communication-chat': 1.0.0-beta.3
+      '@azure/communication-common': 1.0.0-beta.3
+      '@azure/communication-signaling': 1.0.0-beta.1
+      '@azure/core-http': 1.2.3
+      '@fluentui/react': 7.162.0_7780220a916877297c987d702313b31d
+      '@fluentui/react-icons-northstar': 0.51.7_7780220a916877297c987d702313b31d
+      '@fluentui/react-northstar': 0.51.7_7780220a916877297c987d702313b31d
+      '@fluentui/react-theme-provider': 0.18.5_7780220a916877297c987d702313b31d
+      '@testing-library/jest-dom': 5.11.9
+      '@testing-library/react-hooks': 3.7.0_98e0eb37a9f7280a1c5a6c886619f5b4
+      '@types/jest': 26.0.20
+      '@types/json-stringify-safe': 5.0.0
+      '@types/preval.macro': 3.0.0
+      '@types/react': 16.14.4
+      '@types/react-aria-live': 2.0.0
+      '@types/react-dom': 16.9.11
+      '@types/react-linkify': 1.0.0
+      '@typescript-eslint/eslint-plugin': 4.15.2_bd37cc6d9e4ef1f78f94a852ca0107ce
+      '@typescript-eslint/parser': 4.15.2_eslint@7.20.0+typescript@4.1.5
+      babel-eslint: 10.1.0_eslint@7.20.0
+      concurrently: 5.3.0
+      copyfiles: 2.4.1
+      eslint: 7.20.0
+      eslint-config-prettier: 6.15.0_eslint@7.20.0
+      eslint-config-react-app: 6.0.0_f7c3ec5ad201cfa592e9dfe45b8b9832
+      eslint-plugin-flowtype: 5.3.1_eslint@7.20.0
+      eslint-plugin-header: 3.1.1_eslint@7.20.0
+      eslint-plugin-prettier: 3.3.1_822b4c7c304ad0fbad34b397ba6938a8
+      eslint-plugin-react: 7.22.0_eslint@7.20.0
+      eslint-plugin-react-hooks: 4.2.0_eslint@7.20.0
+      husky: 4.3.8
+      jest: 26.6.0_ts-node@9.1.1
+      jest-fetch-mock: 3.0.3
+      jest-junit: 12.0.0
+      json-stringify-safe: 5.0.1
+      office-ui-fabric-react: 7.162.0_7780220a916877297c987d702313b31d
+      prettier: 2.0.5
+      pretty-quick: 3.1.0_prettier@2.0.5
+      preval.macro: 5.0.0
+      react: 16.14.0
+      react-aria-live: 2.0.5_react@16.14.0
+      react-dom: 16.14.0_react@16.14.0
+      react-linkify: 1.0.0-alpha
+      react-scripts: 4.0.3_a9e99724ada6035f86b48f9bda330596
+      react-test-renderer: 16.14.0_react@16.14.0
+      rimraf: 2.7.1
+      typescript: 4.1.5
+    dev: false
+    id: file:projects/acs-chat-declarative-sample.tgz
+    name: '@rush-temp/acs-chat-declarative-sample'
+    peerDependencies:
+      eslint-plugin-import: '*'
+      eslint-plugin-jsx-a11y: '*'
+      ts-node: '*'
+      webpack-cli: '*'
+    resolution:
+      integrity: sha512-h+2oZmnPaVAXkj76lF31dNXC2mUyVGLwRcIiH4AgP/swJYUAHouUUfWooatEwUufxBb61g0xYcbk3IyGxOAkmw==
+      tarball: file:projects/acs-chat-declarative-sample.tgz
+    version: 0.0.0
   file:projects/acs-chat-declarative.tgz_prettier@2.0.5+ts-node@9.1.1:
     dependencies:
       '@azure/communication-chat': 1.0.0-beta.4
@@ -19909,6 +19972,44 @@ packages:
     resolution:
       integrity: sha512-hmkpg4YB2R0yqNQXYI6XxS+tEmJGqFqPKDs1Zk+Cc1tm2KHXLG5Bt3+hCRYGQ47d0t7usqjvT9iDIX7riIyJhA==
       tarball: file:projects/acs-chat-declarative.tgz
+    version: 0.0.0
+  file:projects/acs-chat-react-component.tgz_prettier@2.0.5+webpack-cli@4.5.0:
+    dependencies:
+      '@azure/communication-chat': 1.0.0-beta.3
+      '@fluentui/react': 7.162.0_7780220a916877297c987d702313b31d
+      '@fluentui/react-icons': 0.3.10_7780220a916877297c987d702313b31d
+      '@fluentui/react-icons-northstar': 0.51.7_7780220a916877297c987d702313b31d
+      '@fluentui/react-northstar': 0.51.7_7780220a916877297c987d702313b31d
+      '@fluentui/react-theme-provider': 0.18.5_7780220a916877297c987d702313b31d
+      '@types/classnames': 2.2.11
+      '@types/jest': 26.0.20
+      '@types/json-stringify-safe': 5.0.0
+      '@types/node': 14.14.31
+      '@types/react': 16.14.4
+      '@types/react-aria-live': 2.0.0
+      '@types/react-dom': 16.9.11
+      '@types/react-linkify': 1.0.0
+      classnames: 2.2.6
+      eslint: 7.20.0
+      eslint-config-prettier: 6.15.0_eslint@7.20.0
+      eslint-plugin-header: 3.1.1_eslint@7.20.0
+      eslint-plugin-import: 2.22.1_eslint@7.20.0
+      eslint-plugin-prettier: 3.3.1_822b4c7c304ad0fbad34b397ba6938a8
+      react: 16.14.0
+      react-aria-live: 2.0.5_react@16.14.0
+      react-dom: 16.14.0_react@16.14.0
+      react-linkify: 1.0.0-alpha
+      typescript: 4.1.5
+      webpack: 4.44.2_webpack-cli@4.5.0
+    dev: false
+    id: file:projects/acs-chat-react-component.tgz
+    name: '@rush-temp/acs-chat-react-component'
+    peerDependencies:
+      prettier: '*'
+      webpack-cli: '*'
+    resolution:
+      integrity: sha512-KKAREp6qfKGm9ZckTMIxzBAoUmEsK1YGR4mNkbE4QypsnyEBCzcOUBaRINEEADJIbGdA0I/DKUh2PAEgNtSawA==
+      tarball: file:projects/acs-chat-react-component.tgz
     version: 0.0.0
   file:projects/acs-chat-sample.tgz_40b0c9f7a7a0fac66e4b6fcf06de2a42:
     dependencies:
@@ -20217,7 +20318,6 @@ packages:
     version: 0.0.0
 registry: ''
 specifiers:
-  '@azure/communication-administration': 1.0.0-beta.3
   '@azure/communication-calling': 1.0.0-beta.2
   '@azure/communication-common': 1.0.0-beta.3
   '@azure/communication-identity': 1.0.0-beta.4
@@ -20236,6 +20336,8 @@ specifiers:
   '@rush-temp/acs-calling-declarative': file:./projects/acs-calling-declarative.tgz
   '@rush-temp/acs-calling-sample': file:./projects/acs-calling-sample.tgz
   '@rush-temp/acs-chat-declarative': file:./projects/acs-chat-declarative.tgz
+  '@rush-temp/acs-chat-declarative-sample': file:./projects/acs-chat-declarative-sample.tgz
+  '@rush-temp/acs-chat-react-component': file:./projects/acs-chat-react-component.tgz
   '@rush-temp/acs-chat-sample': file:./projects/acs-chat-sample.tgz
   '@rush-temp/acs-chat-selector': file:./projects/acs-chat-selector.tgz
   '@rush-temp/acs-one-to-one-call-sample': file:./projects/acs-one-to-one-call-sample.tgz
