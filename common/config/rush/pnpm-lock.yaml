@@ -1,6 +1,5 @@
 dependencies:
   '@azure/communication-calling': 1.0.0-beta.2
-  '@azure/communication-common': 1.0.0-beta.3
   '@azure/communication-identity': 1.0.0-beta.4
   '@azure/communication-signaling': 1.0.0-beta.1
   '@azure/core-http': 1.2.3
@@ -19888,8 +19887,8 @@ packages:
   file:projects/acs-chat-declarative-sample.tgz_40b0c9f7a7a0fac66e4b6fcf06de2a42:
     dependencies:
       '@azure/communication-administration': 1.0.0-beta.4
-      '@azure/communication-chat': 1.0.0-beta.3
-      '@azure/communication-common': 1.0.0-beta.3
+      '@azure/communication-chat': 1.0.0-beta.4
+      '@azure/communication-common': 1.0.0-beta.5
       '@azure/communication-signaling': 1.0.0-beta.1
       '@azure/core-http': 1.2.3
       '@fluentui/react': 7.162.0_7780220a916877297c987d702313b31d
@@ -19944,7 +19943,7 @@ packages:
       ts-node: '*'
       webpack-cli: '*'
     resolution:
-      integrity: sha512-h+2oZmnPaVAXkj76lF31dNXC2mUyVGLwRcIiH4AgP/swJYUAHouUUfWooatEwUufxBb61g0xYcbk3IyGxOAkmw==
+      integrity: sha512-WuuVox2LC1NJNxLeC6UzoGcDGMkMJPRUcRt7R6B270JXbOOGZv9DaJuOemXEi2nvYRIrvqFFOS5U1sDIExIzQw==
       tarball: file:projects/acs-chat-declarative-sample.tgz
     version: 0.0.0
   file:projects/acs-chat-declarative.tgz_prettier@2.0.5+ts-node@9.1.1:
@@ -20319,7 +20318,6 @@ packages:
 registry: ''
 specifiers:
   '@azure/communication-calling': 1.0.0-beta.2
-  '@azure/communication-common': 1.0.0-beta.3
   '@azure/communication-identity': 1.0.0-beta.4
   '@azure/communication-signaling': 1.0.0-beta.1
   '@azure/core-http': ^1.2.3

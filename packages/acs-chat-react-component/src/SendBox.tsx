@@ -21,7 +21,7 @@ type SendBoxProps = {
   systemMessage?: string;
   displayName: string;
   userId: string;
-  onSendMessage: (messageContent: string) => Promise<void>;
+  onMessageSend: (messageContent: string) => Promise<void>;
   onTyping: () => Promise<void>;
 };
 
@@ -33,7 +33,7 @@ export const SendBoxComponent = (props: SendBoxProps): JSX.Element => {
     disabled,
     systemMessage,
     supportNewline: supportMultiline,
-    onSendMessage,
+    onMessageSend,
     onTyping: onSendTypingNotification
   } = props;
 
@@ -51,7 +51,7 @@ export const SendBoxComponent = (props: SendBoxProps): JSX.Element => {
     }
     // we dont want to send empty messages including spaces, newlines, tabs
     if (!EMPTY_MESSAGE_REGEX.test(textValue)) {
-      onSendMessage(textValue).catch((error) => {
+      onMessageSend(textValue).catch((error) => {
         console.log(error);
       });
       setTextValue('');
