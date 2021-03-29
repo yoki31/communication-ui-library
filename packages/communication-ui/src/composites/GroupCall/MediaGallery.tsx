@@ -1,9 +1,9 @@
 // © Microsoft Corporation. All rights reserved.
 
 import React, { useMemo } from 'react';
-import { connectFuncsToContext, MapToLocalVideoProps } from '../../consumers';
-import { MapToMediaGalleryProps, MediaGalleryContainerProps } from './consumers/MapToMediaGalleryProps';
-import { GridLayout } from '../../components/GridLayout';
+import { MapToLocalVideoProps } from '../../consumers';
+import { MediaGalleryContainerProps } from './consumers/MapToMediaGalleryProps';
+import { GridLayoutComponent } from '../../components/GridLayout';
 import { convertSdkRemoteParticipantToGalleryParticipant } from '../../utils';
 import { StreamMedia, VideoTile } from '../../components';
 import { Label, mergeStyles, Stack } from '@fluentui/react';
@@ -107,4 +107,5 @@ export const MediaGalleryComponentBase = (props: MediaGalleryContainerProps): JS
 export const MediaGalleryComponent = (props: MediaGalleryContainerProps & ErrorHandlingProps): JSX.Element =>
   WithErrorHandling(MediaGalleryComponentBase, props);
 
-export default connectFuncsToContext(MediaGalleryComponent, MapToMediaGalleryProps);
+// export default connectFuncsToContext(MediaGalleryComponent, MapToMediaGalleryProps);
+export default MediaGalleryComponent;

@@ -16,6 +16,9 @@ import MediaGallery from './MediaGallery';
 import { connectFuncsToContext, MapToErrorBarProps } from '../../consumers';
 import { isInCall } from '../../utils/SDKUtils';
 import { GroupCallContainerProps, MapToGroupCallProps } from './consumers/MapToGroupCallProps';
+import { MapToMediaGalleryProps } from './consumers/MapToMediaGalleryProps';
+import { MapToMediaControlsProps } from './consumers/MapToMediaControlsProps';
+import { MapToErrorBarProps } from '../../consumers/MapToErrorBarProps';
 import { MINI_HEADER_WINDOW_WIDTH } from '../../constants';
 import { ErrorHandlingProps } from '../../providers/ErrorProvider';
 import { WithErrorHandling } from '../../utils/WithErrorHandling';
@@ -41,6 +44,10 @@ const GroupCallComponentBase = (props: GroupCallProps & ErrorHandlingProps): JSX
     }
   }, [callState, groupId]);
 
+  const mediaControlProps = MapToMediaControlsProps();
+  const mediaGalleryProps = MapToMediaGalleryProps();
+  const errorBarProps = MapToErrorBarProps();
+
   return (
     <>
       {isCallInitialized ? (
@@ -52,14 +59,14 @@ const GroupCallComponentBase = (props: GroupCallProps & ErrorHandlingProps): JSX
                 compressedMode={screenWidth <= MINI_HEADER_WINDOW_WIDTH}
               />
             </Stack>
-            <ErrorBar />
+            <ErrorBar {...errorBarProps} />
           </Stack.Item>
           <Stack.Item styles={subContainerStyles} grow>
             {!isLocalScreenSharingOn ? (
               callState === 'Connected' && (
                 <Stack styles={containerStyles} grow>
                   <Stack.Item grow styles={activeContainerClassName}>
-                    <MediaGallery />
+                    <MediaGallery {...mediaGalleryProps} />
                   </Stack.Item>
                 </Stack>
               )
