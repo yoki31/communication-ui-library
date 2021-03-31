@@ -10,7 +10,7 @@ import { getDocs } from './GroupCallCompositeDocs';
 import { GroupCall } from '@azure/communication-ui';
 import { COMPOSITE_FOLDER_PREFIX } from '../constants';
 import { CallingAdapter } from '../acsDecouplingBridge/CallingAdapter';
-import { AcsCallingAdapter } from '../acsDecouplingBridge/acs/AcsCallingAdapter';
+import { AzureCommunicationCallingAdapter } from '../acsDecouplingBridge/acs/AzureCommunicationCallingAdapter';
 
 export default {
   title: `${COMPOSITE_FOLDER_PREFIX}/GroupCall`,
@@ -52,7 +52,7 @@ export const GroupCallComposite: () => JSX.Element = () => {
         const groupId = createGUID();
         console.log(`groupId: ${groupId}`);
         setGroupId(groupId);
-        setCallingAdapter(new AcsCallingAdapter(tokenResponse.token));
+        setCallingAdapter(new AzureCommunicationCallingAdapter(tokenResponse.token));
       } catch (e) {
         console.log('Please provide your connection string');
       }
