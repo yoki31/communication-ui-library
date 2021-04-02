@@ -53,6 +53,11 @@
       "reviewCategory": "prototypes"
     },
     {
+      "packageName": "calling-declarative",
+      "projectFolder": "samples/CallingDeclarative",
+      "reviewCategory": "prototypes"
+    },
+    {
       "packageName": "server",
       "projectFolder": "samples/Server",
       "reviewCategory": "prototypes"

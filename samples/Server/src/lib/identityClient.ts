@@ -6,7 +6,7 @@ import {
   CommunicationUserToken,
   TokenScope
 } from '@azure/communication-identity';
-import { CommunicationUser } from '@azure/communication-common';
+import { CommunicationUserIdentifier } from '@azure/communication-common';
 import { getResourceConnectionString } from './envHelper';
 
 // lazy init to allow mocks in test
@@ -15,8 +15,10 @@ const getIdentityClient = (): CommunicationIdentityClient =>
   identityClient ?? (identityClient = new CommunicationIdentityClient(getResourceConnectionString()));
 
 // replicate here to allow for mocks in tests
-export const createUser = (): Promise<CommunicationUser> => getIdentityClient().createUser();
-export const issueToken = (user: CommunicationUser, scopes: TokenScope[]): Promise<CommunicationAccessToken> =>
-  getIdentityClient().issueToken(user, scopes);
+export const createUser = (): Promise<CommunicationUserIdentifier> => getIdentityClient().createUser();
+export const issueToken = (
+  user: CommunicationUserIdentifier,
+  scopes: TokenScope[]
+): Promise<CommunicationAccessToken> => getIdentityClient().getToken(user, scopes);
 export const createUserWithToken = (scopes: TokenScope[]): Promise<CommunicationUserToken> =>
-  getIdentityClient().createUserWithToken(scopes);
+  getIdentityClient().createUserAndToken(scopes);
