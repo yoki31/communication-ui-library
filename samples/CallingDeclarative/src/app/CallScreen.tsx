@@ -6,7 +6,8 @@ import {
   ControlBar,
   hangupButtonProps,
   videoButtonProps,
-  GridLayoutComponent
+  GridLayout,
+  StreamMedia
 } from '@azure/communication-ui';
 import { DefaultButton, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -72,7 +73,8 @@ export function CallScreen(props: CallScreenProps): JSX.Element {
 
   return (
     <Stack style={{ width: '100%', height: '100%' }}>
-      <GridLayoutComponent>{tiles}</GridLayoutComponent>
+      <GridLayout>{tiles}</GridLayout>
+      <RenderedVideoTile displayName={''} />
       <ControlBar layout={'floatingBottom'}>
         <DefaultButton
           {...videoButtonProps}

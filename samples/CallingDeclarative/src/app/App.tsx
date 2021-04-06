@@ -60,9 +60,19 @@ export function App(): JSX.Element {
         setState(state);
       });
       const newDeviceManager = await declarativeCallClient.getDeviceManager();
-      newDeviceManager.askDevicePermission({ audio: true, video: true }).then(() => {
-        newDeviceManager.getCameras();
-        newDeviceManager.getMicrophones();
+      newDeviceManager.askDevicePermission({ audio: true, video: true }).then((deviceAccess) => {
+        // TODO: There is a bug with Calling SDK. We cannot retrieve device info right after getting device permission
+        // as it will return an error. Currently workaround is to wait one second. Calling SDK team has been notified
+        // and they will fix in new version.
+        setTimeout(() => {
+          console.log(deviceAccess);
+          newDeviceManager.getCameras().then((cameras) => {
+            console.log(cameras);
+          });
+          newDeviceManager.getMicrophones().then((microphones) => {
+            console.log(microphones);
+          });
+        }, 1000);
       });
       setCallClient(declarativeCallClient);
       setGroupId(groupIdFromUrl);
