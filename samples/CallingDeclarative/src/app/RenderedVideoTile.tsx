@@ -1,6 +1,6 @@
 // © Microsoft Corporation. All rights reserved.
 
-import { LocalVideoStream, RemoteVideoStream, Renderer } from '@azure/communication-calling';
+import { LocalVideoStream, RemoteVideoStream, VideoStreamRenderer } from '@azure/communication-calling';
 import { StreamMedia, VideoTile } from '@azure/communication-ui';
 import React, { useCallback, useState } from 'react';
 
@@ -16,7 +16,8 @@ export interface RenderedVideoTileProps {
 
 export function RenderedVideoTile(props: RenderedVideoTileProps): JSX.Element {
   const { displayName, stream, children } = props;
-  const [renderer, setRenderer] = useState<Renderer | undefined>(undefined);
+  const [cachedStream, setCachedStream] = useState<LocalVideoStream | RemoteVideoStream>(stream);
+  const [renderer, setRenderer] = useState<VideoStreamRenderer | undefined>(undefined);
   const [videoState, setVideoState] = useState<number>(VIDEO_OFF);
   const [videoView, setVideoView] = useState<HTMLElement | undefined>(undefined);
 
@@ -36,7 +37,7 @@ export function RenderedVideoTile(props: RenderedVideoTileProps): JSX.Element {
         renderer.dispose();
         setRenderer(undefined);
       }
-      const newRenderer = new Renderer(stream);
+      const newRenderer = new VideoStreamRenderer(stream);
       setRenderer(newRenderer);
       const renderView = await newRenderer.createView({ scalingMode: 'Crop' });
       setVideoView(renderView.target);
@@ -46,6 +47,11 @@ export function RenderedVideoTile(props: RenderedVideoTileProps): JSX.Element {
       stopRender();
     }
   }, [renderer, stream, stopRender]);
+
+  if (cachedStream !== stream) {
+    setCachedStream(stream);
+    stopRender();
+  }
 
   if (stream && videoState === VIDEO_OFF) {
     startRender();

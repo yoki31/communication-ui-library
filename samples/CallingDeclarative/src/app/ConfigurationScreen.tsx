@@ -1,10 +1,11 @@
 // © Microsoft Corporation. All rights reserved.
 
-import { AudioDeviceInfo, LocalVideoStream, Renderer, VideoDeviceInfo } from '@azure/communication-calling';
-import { StreamMedia, VideoTile } from '@azure/communication-ui';
+import { AudioDeviceInfo, LocalVideoStream, VideoDeviceInfo } from '@azure/communication-calling';
+import { VideoTile } from '@azure/communication-ui';
 import { Stack, TextField, Image, ImageFit, Dropdown, IDropdownOption, Toggle, PrimaryButton } from '@fluentui/react';
 import React, { useCallback, useState } from 'react';
 import staticMediaSVG from '../assets/staticmedia.svg';
+import { RenderedVideoTile } from './RenderedVideoTile';
 
 const imageProps = {
   src: staticMediaSVG.toString(),
@@ -15,10 +16,6 @@ const imageProps = {
 const defaultPlaceHolder = 'Select an option';
 const cameraLabel = 'Camera';
 const micLabel = 'Microphone';
-
-const VIDEO_OFF = 0;
-const VIDEO_RENDERING = 1;
-const VIDEO_ON = 2;
 
 const getDropDownList = (list: Array<VideoDeviceInfo | AudioDeviceInfo>): IDropdownOption[] => {
   return list.map((item) => ({
@@ -46,10 +43,9 @@ export function ConfigurationScreen(props: ConfigurationScreenProps): JSX.Elemen
   const [displayName, setDisplayName] = useState();
   const [invalidDisplayName, setInvalidDisplayName] = useState(false);
   const [selectedVideoDevice, setSelectedVideoDevice] = useState<VideoDeviceInfo>();
-  const [renderer, setRenderer] = useState<Renderer | undefined>(undefined);
-  const [videoState, setVideoState] = useState<number>(VIDEO_OFF);
-  const [videoView, setVideoView] = useState<HTMLElement | undefined>(undefined);
   const [microphoneOn, setMicrophoneOn] = useState<boolean>(false);
+  const [localVideoStream, setLocalVideoStream] = useState<LocalVideoStream>(undefined);
+  const [localPreviewOn, setLocalPreviewOn] = useState<boolean>(false);
 
   const onNameTextChange = useCallback((event: any): void => {
     setDisplayName(event.target.value);
@@ -65,8 +61,13 @@ export function ConfigurationScreen(props: ConfigurationScreenProps): JSX.Elemen
   const onVideoDeviceChange = useCallback(
     (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption | undefined, index?: number | undefined) => {
       setSelectedVideoDevice(videoDevices[index ?? 0]);
+      setLocalVideoStream(new LocalVideoStream(videoDevices[index ?? 0]));
+      if (localPreviewOn) {
+        setLocalPreviewOn(false);
+        setLocalPreviewOn(true);
+      }
     },
-    [videoDevices]
+    [localPreviewOn, videoDevices]
   );
 
   const onAudioDeviceChange = useCallback(
@@ -77,43 +78,24 @@ export function ConfigurationScreen(props: ConfigurationScreenProps): JSX.Elemen
   );
 
   const onStartCall = useCallback(() => {
-    startCallHandler(displayName, videoState === VIDEO_ON, microphoneOn, selectedVideoDevice);
-  }, [startCallHandler, displayName, videoState, microphoneOn, selectedVideoDevice]);
+    startCallHandler(displayName, localPreviewOn, microphoneOn, selectedVideoDevice);
+  }, [startCallHandler, displayName, localPreviewOn, microphoneOn, selectedVideoDevice]);
 
   const stopLocalPreview = useCallback(async () => {
-    setVideoState(VIDEO_OFF);
-    if (renderer) {
-      renderer.dispose();
-      setRenderer(undefined);
-    }
-    setVideoView(undefined);
-  }, [renderer]);
+    setLocalPreviewOn(false);
+  }, []);
 
   const startLocalPreview = useCallback(async () => {
-    try {
-      setVideoState(VIDEO_RENDERING);
-      if (renderer) {
-        renderer.dispose();
-        setRenderer(undefined);
-      }
-      const newRenderer = new Renderer(new LocalVideoStream(selectedVideoDevice));
-      setRenderer(newRenderer);
-      const renderView = await newRenderer.createView({ scalingMode: 'Crop' });
-      setVideoView(renderView.target);
-      setVideoState(VIDEO_ON);
-    } catch (e) {
-      console.error(e);
-      stopLocalPreview();
-    }
-  }, [renderer, selectedVideoDevice, stopLocalPreview]);
+    setLocalPreviewOn(true);
+  }, []);
 
   const onToggleVideo = useCallback(() => {
-    if (videoState === VIDEO_OFF && selectedVideoDevice) {
-      startLocalPreview();
-    } else {
+    if (localPreviewOn) {
       stopLocalPreview();
+    } else {
+      startLocalPreview();
     }
-  }, [videoState, selectedVideoDevice, startLocalPreview, stopLocalPreview]);
+  }, [localPreviewOn, startLocalPreview, stopLocalPreview]);
 
   const onToggleMicrophone = useCallback(() => {
     setMicrophoneOn(!microphoneOn);
@@ -135,15 +117,18 @@ export function ConfigurationScreen(props: ConfigurationScreenProps): JSX.Elemen
           minHeight: '16.875rem'
         }}
       >
-        <VideoTile
-          isVideoReady={videoState === VIDEO_ON}
-          videoProvider={<StreamMedia videoStreamElement={videoState === VIDEO_ON && videoView ? videoView : null} />}
-          placeholderProvider={<Image aria-label="Local video preview image" {...imageProps} />}
-        />
+        {localPreviewOn ? (
+          <RenderedVideoTile displayName={''} stream={localVideoStream} />
+        ) : (
+          <VideoTile
+            isVideoReady={false}
+            placeholderProvider={<Image aria-label="Local video preview image" {...imageProps} />}
+          />
+        )}
         <Stack horizontal>
           {'Toggle Video'}
           <Toggle
-            checked={videoState === VIDEO_ON}
+            checked={localPreviewOn}
             disabled={!selectedVideoDevice}
             onChange={onToggleVideo}
             ariaLabel="Video Icon"
@@ -173,7 +158,9 @@ export function ConfigurationScreen(props: ConfigurationScreenProps): JSX.Elemen
           label={cameraLabel}
           options={getDropDownList(videoDevices)}
           disabled={videoDevices.length === 0}
-          defaultSelectedKey={videoDevices.length > 0 ? videoDevices[0].id : ''}
+          defaultSelectedKey={
+            selectedVideoDevice ? selectedVideoDevice.id : videoDevices.length > 0 ? videoDevices[0].id : ''
+          }
           onChange={onVideoDeviceChange}
         />
         <Dropdown

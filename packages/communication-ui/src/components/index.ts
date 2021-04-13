@@ -30,7 +30,6 @@ export { ParticipantItem } from './ParticipantItem';
 export type { ParticipantItemProps, ParticipantItemStylesProps } from './ParticipantItem';
 
 export {
-  CONTROL_BAR_LAYOUTS,
   ControlBar,
   videoButtonProps,
   audioButtonProps,
@@ -38,11 +37,14 @@ export {
   optionsButtonProps,
   answerButtonProps,
   hangupButtonProps,
+  recordButtonProps,
   labeledVideoButtonProps,
   labeledAudioButtonProps,
   labeledScreenShareButtonProps,
   labeledHangupButtonProps,
-  labeledOptionsButtonProps
+  labeledOptionsButtonProps,
+  labeledAnswerButtonProps,
+  labeledRecordButtonProps
 } from './ControlBar';
 export type { ControlBarProps, ControlBarLayoutType } from './ControlBar';
 

@@ -38,10 +38,10 @@ export function App(): JSX.Element {
   const [callAgent, setCallAgent] = useState<CallAgent | undefined>();
   const [state, setState] = useState<CallClientState | undefined>();
 
+  const [call, setCall] = useState<Call | undefined>();
   // Note: CallId can change according to the SDK. How can contoso keep track of which call is active if there are
   // multiple calls and callId can change?
-  const [call, setCall] = useState<Call | undefined>();
-  const [callId, setCallId] = useState<string | undefined>();
+  // const [callId, setCallId] = useState<string | undefined>();
   const [selectedVideoDevice, setSelectedVideoDevice] = useState<VideoDeviceInfo | undefined>();
   const [displayName, setDisplayName] = useState<string>('');
 
@@ -53,31 +53,40 @@ export function App(): JSX.Element {
       if (callAgent) {
         await callAgent.dispose();
       }
+      console.log('here');
 
-      const newCallClient = new CallClient();
+      const newCallClient = new CallClient({});
+      console.log('here 2');
       const declarativeCallClient = callClientDeclaratify(newCallClient);
+      console.log('here 3');
       declarativeCallClient.onStateChange((state: CallClientState) => {
+        console.log('onStateChange', state);
         setState(state);
+        console.log('setState');
       });
+      console.log('here 4');
       const newDeviceManager = await declarativeCallClient.getDeviceManager();
+      console.log('here 5');
       newDeviceManager.askDevicePermission({ audio: true, video: true }).then((deviceAccess) => {
         // TODO: There is a bug with Calling SDK. We cannot retrieve device info right after getting device permission
         // as it will return an error. Currently workaround is to wait one second. Calling SDK team has been notified
         // and they will fix in new version.
         setTimeout(() => {
-          console.log(deviceAccess);
+          console.log('device access', deviceAccess);
           newDeviceManager.getCameras().then((cameras) => {
-            console.log(cameras);
+            console.log('cameras', cameras);
           });
           newDeviceManager.getMicrophones().then((microphones) => {
-            console.log(microphones);
+            console.log('microphones', microphones);
           });
         }, 1000);
       });
+      console.log('here 6');
       setCallClient(declarativeCallClient);
       setGroupId(groupIdFromUrl);
       setDeviceManager(newDeviceManager);
       setScreen(CONFIGURATIONSCREEN);
+      console.log('here 7');
     },
     [callAgent]
   );
@@ -104,6 +113,7 @@ export function App(): JSX.Element {
       const token = await getTokenResponse.json().then((_responseJson) => {
         return { token: _responseJson.token, id: _responseJson.user.communicationUserId };
       });
+
       const credential = new AzureCommunicationTokenCredential(token.token);
       const newCallAgent = await callClient.createCallAgent(credential, { displayName: displayName });
 
@@ -117,10 +127,10 @@ export function App(): JSX.Element {
       };
       const call = newCallAgent.join({ groupId: groupId }, callOptions);
 
-      setMuted(call.isMicrophoneMuted);
+      setMuted(call.isMuted);
       setSelectedVideoDevice(selectedVideoDevice);
       setCall(call);
-      setCallId(call.id);
+      console.log(call.id);
       setCallAgent(newCallAgent);
       setScreen(CALLSCREEN);
     },
@@ -142,14 +152,46 @@ export function App(): JSX.Element {
     if (!call) {
       return;
     }
-    if (call.isMicrophoneMuted) {
+    if (call.isMuted) {
       await call.unmute();
-      setMuted(call.isMicrophoneMuted);
+      setMuted(call.isMuted);
     } else {
       await call.mute();
-      setMuted(call.isMicrophoneMuted);
+      setMuted(call.isMuted);
     }
   }, [call]);
+
+  const onToggleScreenShare = useCallback(async () => {
+    if (!call) {
+      return;
+    }
+
+    if (!call.isScreenSharingOn) {
+      await call.startScreenSharing();
+    } else {
+      await call.stopScreenSharing();
+    }
+  }, [call]);
+
+  const onSwitchSource = useCallback(
+    async (videoDeviceInfo: VideoDeviceInfo) => {
+      if (!call) {
+        return;
+      }
+
+      if (call.localVideoStreams.length === 0) {
+        setSelectedVideoDevice(videoDeviceInfo);
+        return;
+      }
+
+      try {
+        await call.localVideoStreams[0].switchSource(videoDeviceInfo);
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [call]
+  );
 
   const onLeaveCall = useCallback(async () => {
     try {
@@ -167,8 +209,8 @@ export function App(): JSX.Element {
   }, []);
 
   if (call) {
-    if (muted !== call.isMicrophoneMuted) {
-      setMuted(call.isMicrophoneMuted);
+    if (muted !== call.isMuted) {
+      setMuted(call.isMuted);
     }
   }
 
@@ -212,18 +254,24 @@ export function App(): JSX.Element {
       />
     );
   } else if (screen === CALLSCREEN) {
-    const callState = state.calls.get(callId);
+    const callState = state.calls.get(call.id);
+    console.log('callId', call.id);
+    console.log('getState', state);
     return (
       <CallScreen
         isVideoOn={callState ? callState.localVideoStreams.length > 0 : false}
         isMuted={muted}
+        isScreenSharingOn={callState ? callState.isScreenSharingOn : false}
         participants={call ? [...call.remoteParticipants] : []}
         localVideoStream={
           call ? (call.localVideoStreams.length > 0 ? call.localVideoStreams[0] : undefined) : undefined
         }
         displayName={displayName}
+        videoDeviceInfos={state.deviceManagerState.cameras}
         toggleVideo={onToggleVideo}
         toggleMute={onToggleMute}
+        toggleScreenShare={onToggleScreenShare}
+        switchSource={onSwitchSource}
         leaveCall={onLeaveCall}
       />
     );
