@@ -15,8 +15,7 @@ import {
   GridLayout,
   screenShareButtonProps,
   optionsButtonProps,
-  ParticipantItem,
-  VideoTile
+  ParticipantItem
 } from '@azure/communication-ui';
 import { DefaultButton, MessageBar, MessageBarType, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -99,22 +98,20 @@ export function CallScreen(props: CallScreenProps): JSX.Element {
   const tiles = useMemo(() => {
     const tiles = [];
     let i = 0;
-    tiles.push(<VideoTile isVideoReady={false} avatarName={displayName} />);
-    /*
+    //tiles.push(<VideoTile isVideoReady={false} avatarName={displayName} />);
     tiles.push(
       <RenderedVideoTile displayName={displayName} stream={localVideoStream} key={i}>
         <label>{displayName}</label>
       </RenderedVideoTile>
     );
-    */
     participants.forEach((participant) => {
       console.log('participant', participant);
       i++;
-      /*
       let cameraStream = undefined;
       for (const videoStream of participant.videoStreams) {
         if (videoStream.mediaStreamType === 'Video') {
           cameraStream = videoStream;
+          console.log(cameraStream);
           break;
         }
       }
@@ -127,11 +124,10 @@ export function CallScreen(props: CallScreenProps): JSX.Element {
           <label>{participant.displayName}</label>
         </RenderedVideoTile>
       );
-      */
-      tiles.push(<VideoTile key={i} isVideoReady={false} avatarName={participant.displayName} />);
+      // tiles.push(<VideoTile key={i} isVideoReady={false} avatarName={participant.displayName} />);
     });
     return tiles;
-  }, [displayName, participants]);
+  }, [displayName, localVideoStream, participants]);
 
   const screenShare = useMemo(() => {
     if (isScreenSharingOn) {
