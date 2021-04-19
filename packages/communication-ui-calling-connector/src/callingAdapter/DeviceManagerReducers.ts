@@ -1,7 +1,7 @@
 // © Microsoft Corporation. All rights reserved.
 
 import { AudioDeviceInfo, VideoDeviceInfo, CallAgent, DeviceManager } from '@azure/communication-calling';
-import { CallingState } from '../CallingState';
+import { CallingState } from '@azure/communication-ui';
 import { startCamera, stopCamera } from './CallAgentReducers';
 import { CallingStateUpdate, concatCallingStateUpdate } from './StateUpdates';
 
@@ -38,14 +38,14 @@ export const setMicrophone = (
   };
 };
 
-export const queryCameras = (deviceManager: DeviceManager): CallingStateUpdate => {
-  return (draft) => {
-    draft.devices.cameras = deviceManager.getCameraList();
+export const queryCameras = async (deviceManager: DeviceManager): Promise<CallingStateUpdate> => {
+  return async (draft) => {
+    draft.devices.cameras = await deviceManager.getCameras();
   };
 };
 
-export const queryMicrophones = (deviceManager: DeviceManager): CallingStateUpdate => {
-  return (draft) => {
-    draft.devices.microphones = deviceManager.getMicrophoneList();
+export const queryMicrophones = (deviceManager: DeviceManager): Promise<CallingStateUpdate> => {
+  return async (draft) => {
+    draft.devices.microphones = deviceManager.getMicrophones();
   };
 };

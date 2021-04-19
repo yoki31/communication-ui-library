@@ -3,11 +3,11 @@
 import { CallClient, CallAgent, DeviceManager } from '@azure/communication-calling';
 import { AzureCommunicationUserCredential, CommunicationUserCredential } from '@azure/communication-common';
 import { AzureLogger } from '@azure/logger';
-import { CallingAdapter } from '../CallingAdapter';
-import { CallingState } from '../CallingState';
+import { CallingAdapter } from '@azure/communication-ui';
+import { CallingState } from '@azure/communication-ui';
 import { createActions } from './ActionsCreator';
 import { CallingStateUpdate, CallingStateUpdateAsync, ChangeEmitter, isPromise } from './StateUpdates';
-import { CallingActions } from '../CallingActions';
+import { CallingActions } from '@azure/communication-ui';
 import { subscribeToDeviceManager } from './DeviceManagerSubscriber';
 import { subscribeToCallAgent } from './CallAgentSubscriber';
 import { EventEmitter } from 'events';

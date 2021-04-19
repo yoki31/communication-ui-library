@@ -2,14 +2,13 @@
 
 import {
   RemoteParticipant,
-  LocalVideoStream,
+  VideoStream,
   VideoDeviceInfo,
   AudioDeviceInfo,
   PermissionState,
-  CallState as CallStatus,
-  RemoteVideoStream
-} from '@azure/communication-calling';
-import { ParticipantStream } from '../types/ParticipantStream';
+  CallStatus,
+  RemoteParticipantStream
+} from './CallingModels';
 
 // don't expose types with imperative logic directly: Call, CallClient, CallAgent, DeviceManager
 // instead expose that functionality as handlers
@@ -28,12 +27,12 @@ export interface CallState {
   isInitialized: boolean;
   status: CallStatus;
   participants: RemoteParticipant[];
-  screenShareStream: ParticipantStream | undefined;
+  screenShareStream: RemoteParticipantStream | undefined;
   displayName: string;
   isMicrophoneEnabled: boolean;
   localScreenShareActive: boolean;
-  localVideoStream: LocalVideoStream | undefined;
-  remoteVideoStreams: Map<string, RemoteVideoStream[]>;
+  localVideoStream: VideoStream | undefined;
+  remoteVideoStreams: Map<string, VideoStream[]>;
   rawLocalMediaStream: MediaProvider | null;
   localVideoElement: HTMLElement | undefined;
   isLocalVideoOn: boolean;

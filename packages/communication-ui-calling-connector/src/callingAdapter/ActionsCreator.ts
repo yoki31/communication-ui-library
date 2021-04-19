@@ -1,7 +1,7 @@
 // © Microsoft Corporation. All rights reserved.
 import { CallAgent, DeviceManager, ScalingMode } from '@azure/communication-calling';
-import { CallingState } from '../CallingState';
-import { CallingActions } from '../CallingActions';
+import { CallingState } from '@azure/communication-ui';
+import { CallingActions } from '@azure/communication-ui';
 import { updateDisplayName } from './CallClientReducers';
 import {
   joinCall,

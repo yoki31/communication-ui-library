@@ -1,7 +1,7 @@
 // © Microsoft Corporation. All rights reserved.
 
 import { AudioOptions, CallAgent, LocalVideoStream } from '@azure/communication-calling';
-import { CallingState } from '../CallingState';
+import { CallingState } from '@azure/communication-ui';
 import { disposeLocalVideo } from './RendererReducers';
 import { CallingStateUpdate } from './StateUpdates';
 

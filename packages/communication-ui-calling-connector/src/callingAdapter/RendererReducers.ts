@@ -1,13 +1,21 @@
 // © Microsoft Corporation. All rights reserved.
 
-import { Renderer, RendererView, ScalingMode } from '@azure/communication-calling';
-import { CallingState } from '../CallingState';
+import {
+  LocalVideoStream,
+  ScalingMode,
+  VideoStreamRenderer,
+  VideoStreamRendererView
+} from '@azure/communication-calling';
+import { CallingState } from '@azure/communication-ui';
 import { CallingStateUpdate } from './StateUpdates';
 
 // we might need to keep track of ACS renderers for things like dispose()?
 // maybe React takes care of that for us and we don't need DOM detach logic
 // TODO FIX: here we're preventing multiple adapters from being used the app
-let localRendererView: RendererView | null = null;
+let localRendererView: VideoStreamRendererView | null = null;
+
+// TODO FIX: here we're preventing multiple adapters from being used the app
+const heavyStreams = new Map<string, LocalVideoStream>();
 
 // todo simplify only support one local renderer at a time
 export const disposeLocalVideo = (): void => {
@@ -27,8 +35,8 @@ export const renderLocalVideo = async (
 
   disposeLocalVideo();
 
-  const renderer = new Renderer(video);
-  const view = await renderer.createView({ scalingMode, mirrored });
+  const renderer = new VideoStreamRenderer(video);
+  const view = await renderer.createView({ scalingMode, isMirrored: mirrored });
   localRendererView = view;
   const rawStream = extractStream(view);
   return (draft) => {
@@ -38,7 +46,7 @@ export const renderLocalVideo = async (
 };
 
 // hack for fun and profit
-const extractStream = (view: RendererView): MediaProvider | null => {
+const extractStream = (view: VideoStreamRendererView): MediaProvider | null => {
   const div = view.target as HTMLDivElement;
   const videoElement = div.firstElementChild as HTMLVideoElement;
   return videoElement.srcObject;

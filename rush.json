@@ -38,6 +38,11 @@
       "reviewCategory": "prototypes"
     },
     {
+      "packageName": "@azure/communication-ui-calling-connector",
+      "projectFolder": "packages/communication-ui-calling-connector",
+      "reviewCategory": "prototypes"
+    },
+    {
       "packageName": "calling",
       "projectFolder": "samples/Calling",
       "reviewCategory": "prototypes"

@@ -1,5 +1,5 @@
 // © Microsoft Corporation. All rights reserved.
-import { CallingState } from '../CallingState';
+import { CallingState } from '@azure/communication-ui';
 
 export type CallingStateUpdate = (state: CallingState) => void;
 export type CallingStateUpdateAsync = (state: CallingState) => Promise<void>;
