@@ -30,6 +30,8 @@ const CALLSCREEN = 4;
 const ENDSCREEN = 5;
 
 export function App(): JSX.Element {
+  // Test
+  // const [renderedVideoStreams] = useState<Map<string, HTMLElement>>(new Map<string, HTMLElement>());
   const [screen, setScreen] = useState<number>(BLANKSCREEN);
   const [groupId, setGroupId] = useState<string>('');
 
@@ -53,26 +55,19 @@ export function App(): JSX.Element {
       if (callAgent) {
         await callAgent.dispose();
       }
-      console.log('here');
 
       const newCallClient = new CallClient({});
-      console.log('here 2');
       const declarativeCallClient = callClientDeclaratify(newCallClient);
-      console.log('here 3');
       declarativeCallClient.onStateChange((state: CallClientState) => {
-        console.log('onStateChange', state);
         setState(state);
-        console.log('setState');
       });
-      console.log('here 4');
       const newDeviceManager = await declarativeCallClient.getDeviceManager();
-      console.log('here 5');
       newDeviceManager.askDevicePermission({ audio: true, video: true }).then((deviceAccess) => {
         // TODO: There is a bug with Calling SDK. We cannot retrieve device info right after getting device permission
         // as it will return an error. Currently workaround is to wait one second. Calling SDK team has been notified
         // and they will fix in new version.
+        console.log('deviceAccess', deviceAccess);
         setTimeout(() => {
-          console.log('device access', deviceAccess);
           newDeviceManager.getCameras().then((cameras) => {
             console.log('cameras', cameras);
           });
@@ -81,12 +76,10 @@ export function App(): JSX.Element {
           });
         }, 1000);
       });
-      console.log('here 6');
       setCallClient(declarativeCallClient);
       setGroupId(groupIdFromUrl);
       setDeviceManager(newDeviceManager);
       setScreen(CONFIGURATIONSCREEN);
-      console.log('here 7');
     },
     [callAgent]
   );
@@ -113,6 +106,8 @@ export function App(): JSX.Element {
       const token = await getTokenResponse.json().then((_responseJson) => {
         return { token: _responseJson.token, id: _responseJson.user.communicationUserId };
       });
+      console.log('token', token);
+      console.log('userId', token.id);
 
       const credential = new AzureCommunicationTokenCredential(token.token);
       const newCallAgent = await callClient.createCallAgent(credential, { displayName: displayName });
@@ -130,7 +125,7 @@ export function App(): JSX.Element {
       setMuted(call.isMuted);
       setSelectedVideoDevice(selectedVideoDevice);
       setCall(call);
-      console.log(call.id);
+      console.log('initial callId', call.id);
       setCallAgent(newCallAgent);
       setScreen(CALLSCREEN);
     },
@@ -189,6 +184,13 @@ export function App(): JSX.Element {
       } catch (e) {
         console.error(e);
       }
+    },
+    [call]
+  );
+
+  const onRemoveParticipant = useCallback(
+    (participantIdentifier) => {
+      call.removeParticipant(participantIdentifier);
     },
     [call]
   );
@@ -254,9 +256,37 @@ export function App(): JSX.Element {
       />
     );
   } else if (screen === CALLSCREEN) {
+    /*
+    if (call) {
+      for (const participant of call.remoteParticipants) {
+        if (participant.identifier.kind !== 'communicationUser') {
+          continue;
+        }
+        const key = participant.identifier.communicationUserId;
+        if (renderedVideoStreams.has(key)) {
+          continue;
+        }
+
+        if (participant.videoStreams.length === 0) {
+          continue;
+        }
+
+        const stream = participant.videoStreams[0];
+        console.log('rendered video stream');
+
+        const newRenderer = new VideoStreamRenderer(stream);
+        newRenderer.createView({ scalingMode: 'Crop' }).then((element) => {
+          renderedVideoStreams.set(key, element.target);
+        });
+      }
+    }
+
+    console.log('renderedVideoStreams', renderedVideoStreams);
+    */
+
     const callState = state.calls.get(call.id);
-    console.log('callId', call.id);
-    console.log('getState', state);
+    console.log('current callId', call.id);
+    console.log('state', state);
     return (
       <CallScreen
         isVideoOn={callState ? callState.localVideoStreams.length > 0 : false}
@@ -268,10 +298,11 @@ export function App(): JSX.Element {
         }
         displayName={displayName}
         videoDeviceInfos={state.deviceManagerState.cameras}
+        switchSource={onSwitchSource}
         toggleVideo={onToggleVideo}
         toggleMute={onToggleMute}
         toggleScreenShare={onToggleScreenShare}
-        switchSource={onSwitchSource}
+        removeParticipant={onRemoveParticipant}
         leaveCall={onLeaveCall}
       />
     );

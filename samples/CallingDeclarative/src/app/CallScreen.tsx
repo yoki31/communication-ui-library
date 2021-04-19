@@ -2,13 +2,21 @@
 
 import { LocalVideoStream, RemoteParticipant, VideoDeviceInfo } from '@azure/communication-calling';
 import {
+  CommunicationUserIdentifier,
+  MicrosoftTeamsUserIdentifier,
+  PhoneNumberIdentifier,
+  UnknownIdentifier
+} from '@azure/communication-common';
+import {
   audioButtonProps,
   ControlBar,
   hangupButtonProps,
   videoButtonProps,
   GridLayout,
   screenShareButtonProps,
-  optionsButtonProps
+  optionsButtonProps,
+  ParticipantItem,
+  VideoTile
 } from '@azure/communication-ui';
 import { DefaultButton, MessageBar, MessageBarType, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -18,7 +26,7 @@ export interface CallScreenProps {
   isVideoOn: boolean;
   isMuted: boolean;
   isScreenSharingOn: boolean;
-  participants: ReadonlyArray<RemoteParticipant>;
+  participants: RemoteParticipant[];
   localVideoStream?: LocalVideoStream;
   displayName: string;
   videoDeviceInfos: VideoDeviceInfo[];
@@ -26,6 +34,9 @@ export interface CallScreenProps {
   toggleVideo: () => Promise<void>;
   toggleMute: () => Promise<void>;
   toggleScreenShare: () => Promise<void>;
+  removeParticipant(
+    identifier: CommunicationUserIdentifier | PhoneNumberIdentifier | MicrosoftTeamsUserIdentifier | UnknownIdentifier
+  ): void;
   leaveCall: () => Promise<void>;
 }
 
@@ -42,6 +53,7 @@ export function CallScreen(props: CallScreenProps): JSX.Element {
     toggleVideo,
     toggleMute,
     toggleScreenShare,
+    removeParticipant,
     leaveCall
   } = props;
 
@@ -87,14 +99,18 @@ export function CallScreen(props: CallScreenProps): JSX.Element {
   const tiles = useMemo(() => {
     const tiles = [];
     let i = 0;
+    tiles.push(<VideoTile isVideoReady={false} avatarName={displayName} />);
+    /*
     tiles.push(
       <RenderedVideoTile displayName={displayName} stream={localVideoStream} key={i}>
         <label>{displayName}</label>
       </RenderedVideoTile>
     );
+    */
     participants.forEach((participant) => {
       console.log('participant', participant);
       i++;
+      /*
       let cameraStream = undefined;
       for (const videoStream of participant.videoStreams) {
         if (videoStream.mediaStreamType === 'Video') {
@@ -111,9 +127,11 @@ export function CallScreen(props: CallScreenProps): JSX.Element {
           <label>{participant.displayName}</label>
         </RenderedVideoTile>
       );
+      */
+      tiles.push(<VideoTile key={i} isVideoReady={false} avatarName={participant.displayName} />);
     });
     return tiles;
-  }, [displayName, localVideoStream, participants]);
+  }, [displayName, participants]);
 
   const screenShare = useMemo(() => {
     if (isScreenSharingOn) {
@@ -126,7 +144,6 @@ export function CallScreen(props: CallScreenProps): JSX.Element {
     for (const participant of participants) {
       for (const videoStream of participant.videoStreams) {
         if (videoStream.mediaStreamType === 'ScreenSharing' && videoStream.isAvailable) {
-          console.log('found screen share');
           return <RenderedVideoTile displayName={'screenshare'} stream={videoStream} />;
         }
       }
@@ -151,35 +168,57 @@ export function CallScreen(props: CallScreenProps): JSX.Element {
     return { items: menuItems };
   }, [videoDeviceInfos, switchSource]);
 
-  console.log('checked video', isVideoOn);
-  console.log('checked audio', isMuted);
-
   return (
-    <Stack style={{ width: '100%', height: '100%' }}>
-      <GridLayout>{tiles}</GridLayout>
-      {screenShare}
-      <ControlBar layout={'floatingBottom'}>
-        <DefaultButton
-          {...videoButtonProps}
-          onClick={onToggleVideo}
-          disabled={videoToggleInProgress}
-          checked={isVideoOn}
-        />
-        <DefaultButton
-          {...audioButtonProps}
-          onClick={onToggleMute}
-          disabled={microphoneToggleInProgress}
-          checked={!isMuted}
-        />
-        <DefaultButton
-          {...screenShareButtonProps}
-          onClick={onToggleScreenShare}
-          disabled={screenShareToggleInProgress}
-          checked={isScreenSharingOn}
-        />
-        <DefaultButton {...optionsButtonProps} menuProps={switchSourceMenu} />
-        <DefaultButton {...hangupButtonProps} onClick={leaveCall} />
-      </ControlBar>
+    <Stack style={{ width: '100%', height: '100%' }} horizontal>
+      <Stack style={{ width: '100%', height: '100%' }}>
+        <GridLayout>{tiles}</GridLayout>
+        {screenShare}
+        <ControlBar layout={'floatingBottom'}>
+          <DefaultButton
+            {...videoButtonProps}
+            onClick={onToggleVideo}
+            disabled={videoToggleInProgress}
+            checked={isVideoOn}
+          />
+          <DefaultButton
+            {...audioButtonProps}
+            onClick={onToggleMute}
+            disabled={microphoneToggleInProgress}
+            checked={!isMuted}
+          />
+          <DefaultButton
+            {...screenShareButtonProps}
+            onClick={onToggleScreenShare}
+            disabled={screenShareToggleInProgress}
+            checked={isScreenSharingOn}
+          />
+          <DefaultButton {...optionsButtonProps} menuProps={switchSourceMenu} />
+          <DefaultButton {...hangupButtonProps} onClick={leaveCall} />
+        </ControlBar>
+      </Stack>
+      <Stack style={{ width: '30%', padding: '10px' }}>
+        <ParticipantItem name={displayName + ' (You)'} />
+        {participants.map((participant: RemoteParticipant, index: number) => {
+          return (
+            <ParticipantItem
+              key={index}
+              name={participant.displayName}
+              menuItems={[
+                {
+                  key: 'Kick Participant',
+                  text: 'Kick Participant',
+                  onClick: () => {
+                    console.log('removeParticipant', removeParticipant);
+                    console.log('participant', participant);
+                    console.log('participantIdentifier', participant.identifier);
+                    removeParticipant(participant.identifier);
+                  }
+                }
+              ]}
+            />
+          );
+        })}
+      </Stack>
     </Stack>
   );
 }
