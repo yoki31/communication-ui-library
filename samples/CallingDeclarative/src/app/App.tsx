@@ -34,6 +34,7 @@ export function App(): JSX.Element {
   // const [renderedVideoStreams] = useState<Map<string, HTMLElement>>(new Map<string, HTMLElement>());
   const [screen, setScreen] = useState<number>(BLANKSCREEN);
   const [groupId, setGroupId] = useState<string>('');
+  const [isMeeting, setIsMeeting] = useState<boolean>(false);
 
   const [callClient, setCallClient] = useState<CallClient | undefined>();
   const [deviceManager, setDeviceManager] = useState<DeviceManager | undefined>();
@@ -77,6 +78,7 @@ export function App(): JSX.Element {
         }, 1000);
       });
       setCallClient(declarativeCallClient);
+      console.log('setGroupId', groupIdFromUrl);
       setGroupId(groupIdFromUrl);
       setDeviceManager(newDeviceManager);
       setScreen(CONFIGURATIONSCREEN);
@@ -84,14 +86,25 @@ export function App(): JSX.Element {
     [callAgent]
   );
 
-  const onHomeScreenStartCall = useCallback((): void => {
-    if (groupId.length === 0) {
-      const newGroupId = createGUID();
-      window.history.pushState({}, document.title, window.location.href + '?groupId=' + newGroupId);
-      setGroupId(newGroupId);
-    }
-    setScreen(BLANKSCREEN);
-  }, [groupId]);
+  const onHomeScreenStartCall = useCallback(
+    (meetingLink: string): void => {
+      console.log('meetingLink', meetingLink);
+      if (meetingLink) {
+        window.history.pushState({}, document.title, window.location.href + '?groupId=' + meetingLink);
+        setIsMeeting(true);
+        console.log('setGroupId', meetingLink);
+        setGroupId(meetingLink);
+      } else if (groupId.length === 0) {
+        const newGroupId = createGUID();
+        window.history.pushState({}, document.title, window.location.href + '?groupId=' + newGroupId);
+        console.log('setGroupId', newGroupId);
+        setIsMeeting(false);
+        setGroupId(newGroupId);
+      }
+      setScreen(BLANKSCREEN);
+    },
+    [groupId]
+  );
 
   const onConfigurationScreenStartCall = useCallback(
     async (
@@ -120,7 +133,14 @@ export function App(): JSX.Element {
         videoOptions: videoOptions,
         audioOptions: audioOptions
       };
-      const call = newCallAgent.join({ groupId: groupId }, callOptions);
+      let call;
+      if (isMeeting) {
+        console.log('join call using meeting link', groupId);
+        call = newCallAgent.join({ meetingLink: groupId }, callOptions);
+      } else {
+        console.log('join call using group id', groupId);
+        call = newCallAgent.join({ groupId: groupId }, callOptions);
+      }
 
       setMuted(call.isMuted);
       setSelectedVideoDevice(selectedVideoDevice);
@@ -129,7 +149,7 @@ export function App(): JSX.Element {
       setCallAgent(newCallAgent);
       setScreen(CALLSCREEN);
     },
-    [callClient, groupId]
+    [callClient, groupId, isMeeting]
   );
 
   const onToggleVideo = useCallback(async () => {
