@@ -12,20 +12,12 @@ import { DeclarativeChatClient } from '@azure/acs-chat-declarative';
 import { MessageStatus } from '@azure/acs-chat-declarative';
 import { ReactElement } from 'react';
 import * as reselect from 'reselect';
+import { TypingIndicator } from '@azure/acs-chat-declarative';
 
 // @public (undocumented)
 export type BaseSelectorProps = {
     threadId: string;
 };
-
-// @public (undocumented)
-export const chatHeaderSelector: reselect.OutputParametricSelector<ChatClientState, BaseSelectorProps, {
-    userId: string;
-    topicName: string;
-}, (res1: string, res2: string) => {
-    userId: string;
-    topicName: string;
-}>;
 
 // @public (undocumented)
 export type ChatMessage = Message<'chat'>;
@@ -124,6 +116,13 @@ export type SystemMessagePayload = {
     content?: string;
     iconName?: string;
 };
+
+// @public (undocumented)
+export const typingIndicatorSelector: reselect.OutputParametricSelector<ChatClientState, BaseSelectorProps, {
+    typingUsers: WebUiChatParticipant[];
+}, (res1: TypingIndicator[], res2: Map<string, ChatParticipant>, res3: string) => {
+    typingUsers: WebUiChatParticipant[];
+}>;
 
 // @public (undocumented)
 export type WebUiChatParticipant = {

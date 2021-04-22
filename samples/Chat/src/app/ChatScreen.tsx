@@ -4,20 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { chatScreenBottomContainerStyle, chatScreenContainerStyle } from './styles/ChatScreen.styles';
 import { Stack } from '@fluentui/react';
 import { onRenderAvatar } from './Avatar';
-import {
-  ChatThreadPropsFromContext,
-  MapToChatThreadProps,
-  connectFuncsToContext,
-  ErrorsPropsFromContext,
-  MapToErrorsProps,
-  useThreadId
-} from '@azure/communication-ui';
+import { useChatThreadClient, useThreadId } from '@azure/communication-ui';
 import { ChatHeader } from './ChatHeader';
 import { ChatArea } from './ChatArea';
 import { SidePanel, SidePanelTypes } from './SidePanel';
 import { useSelector } from './hooks/useSelector';
-import { chatHeaderSelector, chatParticipantListSelector } from '@azure/acs-chat-selector';
+import { chatParticipantListSelector } from '@azure/acs-chat-selector';
 import { useHandlers } from './hooks/useHandlers';
+import { chatHeaderSelector } from './selectors/chatHeaderSelector';
 
 // These props are passed in when this component is referenced in JSX and not found in context
 interface ChatScreenProps {
@@ -25,23 +19,38 @@ interface ChatScreenProps {
   errorHandler(): void;
 }
 
-const ChatScreen = (props: ChatScreenProps & ChatThreadPropsFromContext & ErrorsPropsFromContext): JSX.Element => {
+export const ChatScreen = (props: ChatScreenProps): JSX.Element => {
   // People pane will be visible when a chat is joined if the window width is greater than 600
   const [selectedPane, setSelectedPane] = useState(
     window.innerWidth > 600 ? SidePanelTypes.People : SidePanelTypes.None
   );
 
-  const { errorHandler, getThreadMembersError } = props;
+  const { errorHandler, endChatHandler } = props;
+  const chatThreadClient = useChatThreadClient();
+
+  // This code gets all participants who joined the chat earlier than the current user.
+  // We need to do this to make the state in declaritive up to date.
+  useEffect(() => {
+    const fetchAllParticipants = async (): Promise<void> => {
+      if (chatThreadClient !== undefined) {
+        try {
+          for await (const _page of chatThreadClient.listParticipants().byPage({
+            // Fetch 100 participants per page by default.
+            maxPageSize: 100
+          }));
+        } catch (e) {
+          console.log(e);
+          errorHandler();
+        }
+      }
+    };
+
+    fetchAllParticipants();
+  }, [chatThreadClient, errorHandler]);
 
   useEffect(() => {
     document.getElementById('sendbox')?.focus();
   }, []);
-
-  useEffect(() => {
-    if (getThreadMembersError) {
-      errorHandler();
-    }
-  }, [errorHandler, getThreadMembersError]);
 
   const chatHeaderProps = useSelector(chatHeaderSelector, { threadId: useThreadId() });
   const chatHeaderHandlers = useHandlers(ChatHeader);
@@ -56,7 +65,7 @@ const ChatScreen = (props: ChatScreenProps & ChatThreadPropsFromContext & Errors
         {...chatHeaderProps}
         {...chatHeaderHandlers}
         {...chatParticipantProps}
-        endChatHandler={props.endChatHandler}
+        endChatHandler={endChatHandler}
         selectedPane={selectedPane}
         setSelectedPane={setSelectedPane}
       />
@@ -69,5 +78,3 @@ const ChatScreen = (props: ChatScreenProps & ChatThreadPropsFromContext & Errors
     </Stack>
   );
 };
-
-export default connectFuncsToContext(ChatScreen, MapToChatThreadProps, MapToErrorsProps);

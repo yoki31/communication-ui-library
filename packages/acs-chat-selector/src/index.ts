@@ -2,7 +2,7 @@
 export { chatThreadSelector } from './chatThreadSelector';
 export { sendBoxSelector } from './sendBoxSelector';
 export { chatParticipantListSelector } from './chatParticipantListSelector';
-export { chatHeaderSelector } from './chatHeaderSelector';
+export { typingIndicatorSelector } from './typingIndicatorSelector';
 
 export { createDefaultHandlersForComponent } from './handlers/createHandlers';
 export type {
