@@ -21,10 +21,43 @@ initializeIcons();
 export default (): JSX.Element => {
   const [page, setPage] = useState('home');
   const [token, setToken] = useState('');
-  const [userId, setUserId] = useState('');
+  const [_userId, setUserId] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [threadId, setThreadId] = useState('');
   const [endpointUrl, setEndpointUrl] = useState('');
+  const [chatClient, setChatClient] = useState<DeclarativeChatClient>();
+  const [chatThreadClient, setChatThreadClient] = useState<ChatThreadClient>();
+
+  useEffect(() => {
+    if (token && _userId && displayName && threadId && endpointUrl) {
+      // This hack can be removed when `getIdFromToken` is dropped in favour of actually passing in user credentials.
+      const userId = { kind: 'communicationUser', communicationUserId: _userId } as CommunicationUserKind;
+      const createClient = async (): Promise<void> => {
+        const chatClient = chatClientDeclaratify(
+          new ChatClient(endpointUrl, createAzureCommunicationUserCredential(token, refreshTokenAsync(_userId))),
+          { userId, displayName }
+        );
+
+        chatClient.onStateChange((state) => {
+          const thread = state.threads.get(threadId);
+          if (thread) {
+            for (const message of thread.chatMessages.values()) {
+              console.log('content: ' + message.content?.message + ' status: ' + message.status);
+            }
+          }
+        });
+
+        const threadClient = chatClient.getChatThreadClient(threadId);
+        threadClient.sendMessage({ content: 'hello' });
+
+        setChatClient(chatClient);
+        setChatThreadClient(undefined);
+
+        // chatClient.startRealtimeNotifications();
+      };
+      createClient();
+    }
+  }, [displayName, endpointUrl, threadId, token, _userId]);
 
   const getComponent = (): JSX.Element => {
     if (page === 'home') {
@@ -76,7 +109,7 @@ export default (): JSX.Element => {
           homeHandler={() => {
             window.location.href = window.location.origin;
           }}
-          userId={userId}
+          userId={_userId}
           displayName={displayName}
         />
       );
