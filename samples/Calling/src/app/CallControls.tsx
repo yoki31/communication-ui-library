@@ -19,26 +19,26 @@ export type CallControlsProps = {
 export const CallControls = (props: CallControlsProps): JSX.Element => {
   const { compressedMode, onEndCallClick } = props;
   const microphoneButtonProps = usePropsFor(MicrophoneButton);
-  const microphoneButtonHandlers = useHandlers(MicrophoneButton);
   const cameraButtonProps = usePropsFor(CameraButton);
-  const cameraButtonHandlers = useHandlers(CameraButton);
   const screenShareButtonProps = usePropsFor(ScreenShareButton);
-  const screenShareButtonHandlers = useHandlers(ScreenShareButton);
-  const hangUpButtonHandlers = useHandlers(EndCallButton);
-  const hangUpFunctionFromDeclarative = hangUpButtonHandlers.onHangUp;
 
-  hangUpButtonHandlers.onHangUp = async () => {
-    await hangUpFunctionFromDeclarative();
+  // We want to modify onHangUp however we cannot directly change the return value of useHandlers as it is mutable and
+  // if we change it, subsequent calls will return the modified version so we spread it to create a copy and modify the
+  // copy.
+  const hangUpButtonHandlers = useHandlers(EndCallButton);
+  const hangUpButtonHandlersModified = { ...hangUpButtonHandlers };
+  hangUpButtonHandlersModified.onHangUp = async () => {
+    await hangUpButtonHandlers.onHangUp();
     onEndCallClick();
   };
 
   return (
     <ControlBar styles={controlBarStyle}>
-      <MicrophoneButton {...microphoneButtonProps} {...microphoneButtonHandlers} />
-      <CameraButton {...cameraButtonProps} {...cameraButtonHandlers} />
-      <ScreenShareButton {...screenShareButtonProps} {...screenShareButtonHandlers} />
+      <MicrophoneButton {...microphoneButtonProps} />
+      <CameraButton {...cameraButtonProps} />
+      <ScreenShareButton {...screenShareButtonProps} />
       <EndCallButton
-        {...hangUpButtonHandlers}
+        {...hangUpButtonHandlersModified}
         styles={!compressedMode ? groupCallLeaveButtonStyle : groupCallLeaveButtonCompressedStyle}
         text={!compressedMode ? 'Leave' : ''}
       />
