@@ -2,7 +2,7 @@ pr:
   - main
 
 pool:
-  name: ess-corp-w10-f-vs2019-1615-eu
+  name: vsts-linux-stretch
 
 stages:
   - stage: buildStage
