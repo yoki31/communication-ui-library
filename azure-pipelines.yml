@@ -1,6 +1,5 @@
-
 pr:
- - main
+  - main
 
 pool:
   name: ess-corp-w10-f-vs2019-1615-eu
@@ -14,21 +13,23 @@ stages:
         displayName: Build
         steps:
           - task: UseNode@1
-            displayName: "Ensure Node version is latest"
+            displayName: 'Ensure Node version is latest'
             inputs:
-              version: "12.x"
-
-          - task: Npm@1
-            displayName: "Install rush"
-            inputs:
-              command: "custom"
-              customCommand: install -g @microsoft/rush
+              version: '12.x'
 
           - task: PowerShell@2
-            displayName: "Install dependencies"
+            displayName: 'Install rush'
+            inputs:
+              targetType: 'inline'
+              script: npm install -g @microsoft/rush
+              failOnStderr: true
+
+          - task: PowerShell@2
+            displayName: 'Install dependencies'
             inputs:
               targetType: 'inline'
               script: rush install
+              failOnStderr: true
 
           # - task: PowerShell@2
           #   displayName: "changelog check"
@@ -39,19 +40,22 @@ stages:
           - task: PowerShell@2
             displayName: lint check
             inputs:
-                targetType: 'inline'
-                script: rush lint
+              targetType: 'inline'
+              script: rush lint
+              failOnStderr: true
 
           - task: PowerShell@2
-            displayName: "Build Packages and Samples"
+            displayName: 'Build Packages and Samples'
             inputs:
-                targetType: 'inline'
-                script: rush build
+              targetType: 'inline'
+              script: rush build
+              failOnStderr: true
 
           - task: PowerShell@2
-            displayName: "Run Tests"
+            displayName: 'Run Tests'
             inputs:
-                targetType: 'inline'
-                script: rush test
+              targetType: 'inline'
+              script: rush test
+              failOnStderr: true
             env:
               CI: true
