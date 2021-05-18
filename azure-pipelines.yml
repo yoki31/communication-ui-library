@@ -12,6 +12,9 @@ stages:
       - job: build
         displayName: Build
         steps:
+          - checkout: self
+            persistCredentials: true
+
           - task: UseNode@1
             displayName: 'Ensure Node version is latest'
             inputs:
