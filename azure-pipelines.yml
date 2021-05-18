@@ -1,9 +1,6 @@
 pr:
   - main
 
-pool:
-  name: ubuntu-latest
-
 stages:
   - stage: buildStage
     displayName: Build and Test
