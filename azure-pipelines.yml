@@ -17,44 +17,39 @@ stages:
             inputs:
               version: '12.x'
 
-          - task: PowerShell@2
+          - task: CmdLine@2
             displayName: 'Install rush'
             inputs:
-              targetType: 'inline'
               script: npm install -g @microsoft/rush
               failOnStderr: true
 
-          - task: PowerShell@2
+          - task: CmdLine@2
             displayName: 'Install dependencies'
             inputs:
-              targetType: 'inline'
               script: rush install
               failOnStderr: true
 
-          # - task: PowerShell@2
+          # - task: CmdLine@2
           #   displayName: "changelog check"
           #   inputs:
-          #     targetType: 'inline'
+
           #     script: rush changelog:check
 
-          - task: PowerShell@2
+          - task: CmdLine@2
             displayName: lint check
             inputs:
-              targetType: 'inline'
               script: rush lint
               failOnStderr: true
 
-          - task: PowerShell@2
+          - task: CmdLine@2
             displayName: 'Build Packages and Samples'
             inputs:
-              targetType: 'inline'
               script: rush build
               failOnStderr: true
 
-          - task: PowerShell@2
+          - task: CmdLine@2
             displayName: 'Run Tests'
             inputs:
-              targetType: 'inline'
               script: rush test
               failOnStderr: true
             env:
