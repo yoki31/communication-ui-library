@@ -2,7 +2,7 @@ pr:
   - main
 
 pool:
-  name: ess-w10-b-vs2019
+  name: ubuntu-latest
 
 stages:
   - stage: buildStage
