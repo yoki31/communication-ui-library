@@ -7,7 +7,7 @@ import { Stack } from '@fluentui/react';
 import { Title, Description, Heading, Source, Props } from '@storybook/addon-docs/blocks';
 import { text } from '@storybook/addon-knobs';
 import { Meta } from '@storybook/react/types-6-0';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 // also exported from '@storybook/react' if you can deal with breaking changes in 6.1
 import {
   CallComposite as GroupCallComposite,
@@ -137,39 +137,50 @@ export const GroupCall: () => JSX.Element = () => {
     adapter.on('participantsLeft', async (event) => {
       console.log(event);
     });
+    adapter.on('leaveCall', async (event) => {
+      console.log(event);
+    });
   }, [adapter]);
+
+  const renderAvatar = useCallback(
+    (props: PlaceholderProps, defaultOnRender: (props: PlaceholderProps) => JSX.Element): JSX.Element => {
+      return renderCustomizedAvatar(props, defaultOnRender, userId);
+    },
+    [userId]
+  );
 
   return (
     <div style={COMPOSITE_EXPERIENCE_CONTAINER_STYLE}>
-      {adapter && (
-        <GroupCallComposite
-          adapter={adapter}
-          onRenderAvatar={(props, defaultOnRender) => {
-            if (props.userId === userId) {
-              return (
-                <Stack>
-                  <img
-                    src="https://media.giphy.com/media/4Zo41lhzKt6iZ8xff9/giphy.gif"
-                    style={{
-                      borderRadius: '150px',
-                      width: '150px',
-                      position: 'absolute',
-                      margin: 'auto',
-                      left: 0,
-                      right: 0,
-                      top: 0,
-                      bottom: 0
-                    }}
-                  />
-                </Stack>
-              );
-            } else {
-              return defaultOnRender(props);
-            }
-          }}
-        />
-      )}
+      {adapter && <GroupCallComposite adapter={adapter} onRenderAvatar={renderAvatar} />}
       {/* {!connectionString && CompositeConnectionParamsErrMessage([emptyConfigTips])} */}
     </div>
   );
+};
+
+const renderCustomizedAvatar = (
+  props: PlaceholderProps,
+  defaultOnRender: (props: PlaceholderProps) => JSX.Element,
+  userId: string
+): JSX.Element => {
+  if (props.userId === userId) {
+    return (
+      <Stack>
+        <img
+          src="https://media.giphy.com/media/4Zo41lhzKt6iZ8xff9/giphy.gif"
+          style={{
+            borderRadius: '150px',
+            width: '150px',
+            position: 'absolute',
+            margin: 'auto',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+          }}
+        />
+      </Stack>
+    );
+  } else {
+    return defaultOnRender(props);
+  }
 };
