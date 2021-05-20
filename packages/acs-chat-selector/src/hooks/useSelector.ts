@@ -2,18 +2,21 @@
 // Licensed under the MIT license.
 
 import { ChatClientState, StatefulChatClient } from 'chat-stateful-client';
-import { useChatClient } from '../providers/ChatClientProvider';
+import { ChatClientContext } from '../providers/ChatClientProvider';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useContext } from 'react';
 import { useChatThreadClient } from '../providers/ChatThreadClientProvider';
 
 // This function highly depends on chatClient.onChange event
 // It will be moved into selector folder when the ChatClientProvide when refactor finished
-export const useSelector = <SelectorT extends (state: ChatClientState, props: any) => any>(
-  selector: SelectorT,
+export const useSelector = <
+  SelectorT extends (state: ChatClientState, props: any) => any,
+  ParamT extends SelectorT | undefined
+>(
+  selector: ParamT,
   selectorProps?: Parameters<SelectorT>[1]
-): ReturnType<SelectorT> => {
-  const chatClient: StatefulChatClient = useChatClient() as any;
+): ParamT extends SelectorT ? ReturnType<SelectorT> : undefined => {
+  const chatClient: StatefulChatClient | undefined = useContext(ChatClientContext);
   const threadId = useChatThreadClient().threadId;
 
   const threadConfigProps = useMemo(
@@ -23,10 +26,13 @@ export const useSelector = <SelectorT extends (state: ChatClientState, props: an
     [threadId]
   );
 
-  const [props, setProps] = useState(selector(chatClient.getState(), selectorProps ?? threadConfigProps));
+  const [props, setProps] = useState(
+    chatClient && selector ? selector(chatClient.getState(), selectorProps ?? threadConfigProps) : undefined
+  );
   const propRef = useRef(props);
   propRef.current = props;
   useEffect(() => {
+    if (!chatClient || !selector) return;
     const onStateChange = (state: ChatClientState): void => {
       const newProps = selector(state, selectorProps ?? threadConfigProps);
       if (propRef.current !== newProps) {
@@ -38,5 +44,5 @@ export const useSelector = <SelectorT extends (state: ChatClientState, props: an
       chatClient.offStateChange(onStateChange);
     };
   }, [chatClient, selector, selectorProps, threadConfigProps]);
-  return props;
+  return selector ? props : undefined;
 };

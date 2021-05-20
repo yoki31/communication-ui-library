@@ -16,9 +16,16 @@ import { chatParticipantListSelector } from '../chatParticipantListSelector';
 
 export const usePropsFor = <Component extends (props: any) => JSX.Element>(
   component: Component
-): ReturnType<GetSelector<Component>> & Common<DefaultChatHandlers, Parameters<Component>[0]> => {
+): GetSelector<Component> extends (props: any) => any
+  ? ReturnType<GetSelector<Component>> & Common<DefaultChatHandlers, Parameters<Component>[0]>
+  : undefined => {
   const selector = getSelector(component);
-  return { ...useSelector(selector), ...useHandlers<Parameters<Component>[0]>(component) };
+  const props = useSelector(selector);
+  const handlers = useHandlers<Parameters<Component>[0]>(component);
+  if (props !== undefined) {
+    return { ...props, ...handlers } as any;
+  }
+  return undefined as any;
 };
 
 export type GetSelector<Component> = AreEqual<Component, typeof SendBox> extends true

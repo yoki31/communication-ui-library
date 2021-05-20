@@ -67,11 +67,26 @@ export const useSelector = <SelectorT extends (state: any, props: any) => any>(
   return useChatSelector(selector, selectorProps) || useCallSelector(selector, selectorProps);
 };
 
-const isChat = (_component) => true;
 export const usePropsFor = <Component extends (props: any) => JSX.Element>(component: Component): any => {
-  if (isChat(component)) {
-    return useChatPropsFor(component);
-  } else {
-    return useCallPropsFor(component);
+  // one of them will be undefined
+  const chatSelector = getChatSelector(component);
+  const callSelector = getCallSelector(component);
+
+  // one of them will be undefiend
+  const chatProps = useChatSelector(chatSelector);
+  const callProps = useCallSelector(callSelector);
+
+  // cheap to run
+  const chatHandler = useChatHandlers(chatSelector);
+  const callHandler = useCallHandlers(callSelector);
+
+  if (chatProps) {
+    return { ...chatProps, ...chatHandler };
   }
+
+  if (callProps) {
+    return { ...callProps, ...callHandler };
+  }
+
+  throw 'Can\'t find corresponding selector for this component. Please check the supported components from Azure Communication UI Feature Component List.';
 };

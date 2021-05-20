@@ -6,10 +6,13 @@ import { useCall, useCallClient } from 'react-composites';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 
-export const useSelector = <SelectorT extends (state: CallClientState, props: any) => any>(
-  selector: SelectorT,
+export const useSelector = <
+  SelectorT extends (state: CallClientState, props: any) => any,
+  ParamT extends SelectorT | undefined
+>(
+  selector: ParamT,
   selectorProps?: Parameters<SelectorT>[1]
-): ReturnType<SelectorT> => {
+): ParamT extends SelectorT ? ReturnType<SelectorT> : undefined => {
   const callClient: StatefulCallClient = useCallClient() as any;
   const callId = useCall()?.id;
 
@@ -20,10 +23,13 @@ export const useSelector = <SelectorT extends (state: CallClientState, props: an
     [callId]
   );
 
-  const [props, setProps] = useState(selector(callClient.getState(), selectorProps ?? callIdConfigProps));
+  const [props, setProps] = useState(
+    selector && callClient ? selector(callClient.getState(), selectorProps ?? callIdConfigProps) : undefined
+  );
   const propRef = useRef(props);
   propRef.current = props;
   useEffect(() => {
+    if (!selector || !callClient) return;
     const onStateChange = (state: CallClientState): void => {
       const newProps = selector(state, selectorProps ?? callIdConfigProps);
       if (propRef.current !== newProps) {
@@ -35,5 +41,5 @@ export const useSelector = <SelectorT extends (state: CallClientState, props: an
       callClient.offStateChange(onStateChange);
     };
   }, [callClient, selector, selectorProps, callIdConfigProps, callId]);
-  return props;
+  return selector ? props : undefined;
 };
