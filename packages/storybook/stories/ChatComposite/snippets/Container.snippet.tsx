@@ -25,5 +25,37 @@ export const ContosoChatContainer = (props: { config: ChatConfig | undefined }):
     }
   }, [config]);
 
+  useEffect(() => {
+    if (adapter === undefined) return;
+    adapter.on('messageReceived', async (event) => {
+      console.log(event);
+      console.log(event.message);
+    });
+    adapter.on('participantsAdded', async (event) => {
+      console.log(event);
+      console.log(event.participantsAdded);
+    });
+    adapter.on('messageRead', async (event) => {
+      console.log(event);
+      console.log(event.readBy);
+    });
+    adapter.on('messageSent', async (event) => {
+      console.log(event);
+      console.log(event.message);
+    });
+    adapter.on('participantsRemoved', async (event) => {
+      console.log(event);
+      console.log(event.removedBy);
+    });
+    adapter.on('topicChanged', async (event) => {
+      console.log(event);
+      console.log(event.topic);
+    });
+
+    setTimeout(() => {
+      adapter.setTopic('TestTopic');
+    }, 5000);
+  }, [adapter]);
+
   return <>{adapter ? <ChatComposite adapter={adapter} /> : <h3>Loading...</h3>}</>;
 };
