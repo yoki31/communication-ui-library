@@ -64,9 +64,14 @@ export const useSelector = <SelectorT extends (state: any, props: any) => any>(
   selector: SelectorT,
   selectorProps?: Parameters<SelectorT>[1]
 ): any => {
-  return useChatSelector(selector, selectorProps);
+  return useChatSelector(selector, selectorProps) || useCallSelector(selector, selectorProps);
 };
 
+const isChat = (_component) => true;
 export const usePropsFor = <Component extends (props: any) => JSX.Element>(component: Component): any => {
-  return useChatPropsFor(component);
+  if (isChat(component)) {
+    return useChatPropsFor(component);
+  } else {
+    return useCallPropsFor(component);
+  }
 };
