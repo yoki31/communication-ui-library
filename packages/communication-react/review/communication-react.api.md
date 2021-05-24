@@ -259,6 +259,7 @@ export type CallAdapterUiState = {
     error?: Error;
     isLocalPreviewMicrophoneEnabled: boolean;
     page: CallCompositePage;
+    endedCall?: CallState | undefined;
 };
 
 // @public (undocumented)
@@ -290,7 +291,7 @@ export const CallClientContext: React_2.Context<CallClientContextType | undefine
 
 // @public (undocumented)
 export type CallClientContextType = {
-    statefulCallClient: StatefulCallClient;
+    callClient: StatefulCallClient;
     deviceManager: StatefulDeviceManager | undefined;
 };
 
@@ -300,9 +301,9 @@ export const CallClientProvider: (props: CallClientProviderProps) => JSX.Element
 // @public (undocumented)
 export interface CallClientProviderProps {
     // (undocumented)
-    children: React_2.ReactNode;
+    callClient: StatefulCallClient;
     // (undocumented)
-    statefulCallClient: StatefulCallClient;
+    children: React_2.ReactNode;
 }
 
 // @public
@@ -320,7 +321,7 @@ export interface CallClientState {
 export const CallComposite: (props: CallCompositeProps) => JSX.Element;
 
 // @public (undocumented)
-export type CallCompositePage = 'configuration' | 'call';
+export type CallCompositePage = 'configuration' | 'call' | 'error' | 'errorJoiningTeamsMeeting';
 
 // @public (undocumented)
 export type CallCompositeProps = {
@@ -498,13 +499,21 @@ export type ChatClientState = {
 };
 
 // @public (undocumented)
-export const ChatComposite: (props: ChatProps) => JSX.Element;
+export const ChatComposite: (props: ChatCompositeProps) => JSX.Element;
 
 // @public (undocumented)
 export type ChatCompositeClientState = {
     userId: string;
     displayName: string;
     thread: ChatThreadClientState;
+};
+
+// @public (undocumented)
+export type ChatCompositeProps = {
+    adapter: ChatAdapter;
+    fluentTheme?: PartialTheme | Theme;
+    onRenderAvatar?: (userId: string) => JSX.Element;
+    options?: ChatOptions;
 };
 
 // @public (undocumented)
@@ -543,14 +552,6 @@ export const chatParticipantListSelector: reselect.OutputParametricSelector<Chat
     myUserId: string;
     participants: CommunicationParticipant[];
 }>;
-
-// @public (undocumented)
-export type ChatProps = {
-    adapter: ChatAdapter;
-    fluentTheme?: PartialTheme | Theme;
-    onRenderAvatar?: (userId: string) => JSX.Element;
-    options?: ChatOptions;
-};
 
 // @public (undocumented)
 export type ChatState = ChatUIState & ChatCompositeClientState;
@@ -1191,9 +1192,8 @@ export type StatefulChatClientArgs = {
 // @public
 export type StatefulChatClientOptions = ChatClientOptions;
 
-// @public (undocumented)
+// @public
 export interface StatefulDeviceManager extends DeviceManager {
-    // (undocumented)
     selectCamera: (VideoDeviceInfo: any) => void;
 }
 
@@ -1304,13 +1304,13 @@ export const useChatThreadClient: () => ChatThreadClient;
 // @public (undocumented)
 export const useDeviceManager: () => StatefulDeviceManager | undefined;
 
-// @public (undocumented)
+// @public
 export const VideoGallery: (props: VideoGalleryProps) => JSX.Element;
 
-// @public (undocumented)
+// @public
 export type VideoGalleryLocalParticipant = VideoGalleryParticipant;
 
-// @public (undocumented)
+// @public
 export type VideoGalleryParticipant = {
     userId: string;
     isMuted?: boolean;
@@ -1319,37 +1319,24 @@ export type VideoGalleryParticipant = {
     isScreenSharingOn?: boolean;
 };
 
-// @public (undocumented)
+// @public
 export interface VideoGalleryProps {
-    // (undocumented)
     localParticipant: VideoGalleryLocalParticipant;
-    // (undocumented)
     localVideoViewOption?: VideoStreamOptions;
-    // (undocumented)
     onCreateLocalStreamView?: (options?: VideoStreamOptions | undefined) => Promise<void>;
-    // (undocumented)
     onCreateRemoteStreamView?: (userId: string, options?: VideoStreamOptions) => Promise<void>;
-    // (undocumented)
     onDisposeLocalStreamView?: () => void;
-    // (undocumented)
     onRenderAvatar?: (props: PlaceholderProps, defaultOnRender: (props: PlaceholderProps) => JSX.Element) => JSX.Element;
-    // (undocumented)
     onRenderLocalVideoTile?: (localParticipant: VideoGalleryLocalParticipant) => JSX.Element;
-    // (undocumented)
     onRenderRemoteVideoTile?: (remoteParticipant: VideoGalleryRemoteParticipant) => JSX.Element;
-    // (undocumented)
     remoteParticipants?: VideoGalleryRemoteParticipant[];
-    // (undocumented)
     remoteVideoViewOption?: VideoStreamOptions;
-    // (undocumented)
     styles?: BaseCustomStylesProps;
 }
 
-// @public (undocumented)
+// @public
 export interface VideoGalleryRemoteParticipant extends VideoGalleryParticipant {
-    // (undocumented)
     isSpeaking?: boolean;
-    // (undocumented)
     screenShareStream?: VideoGalleryStream;
 }
 
@@ -1384,23 +1371,17 @@ export const videoGallerySelector: reselect.OutputParametricSelector<CallClientS
     remoteParticipants: VideoGalleryRemoteParticipant[];
 }>;
 
-// @public (undocumented)
+// @public
 export interface VideoGalleryStream {
-    // (undocumented)
     id?: number;
-    // (undocumented)
     isAvailable?: boolean;
-    // (undocumented)
     isMirrored?: boolean;
-    // (undocumented)
     renderElement?: HTMLElement;
 }
 
-// @public (undocumented)
+// @public
 export interface VideoStreamOptions {
-    // (undocumented)
     isMirrored?: boolean;
-    // (undocumented)
     scalingMode?: 'Stretch' | 'Crop' | 'Fit';
 }
 

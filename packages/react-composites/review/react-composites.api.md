@@ -224,13 +224,14 @@ export type CallAdapterUiState = {
     error?: Error;
     isLocalPreviewMicrophoneEnabled: boolean;
     page: CallCompositePage;
+    endedCall?: CallState | undefined;
 };
 
 // @public (undocumented)
 export const CallComposite: (props: CallCompositeProps) => JSX.Element;
 
 // @public (undocumented)
-export type CallCompositePage = 'configuration' | 'call';
+export type CallCompositePage = 'configuration' | 'call' | 'error' | 'errorJoiningTeamsMeeting';
 
 // @public (undocumented)
 export type CallCompositeProps = {
@@ -307,7 +308,7 @@ export interface ChatAdapter {
 }
 
 // @public (undocumented)
-export const ChatComposite: (props: ChatProps) => JSX.Element;
+export const ChatComposite: (props: ChatCompositeProps) => JSX.Element;
 
 // @public (undocumented)
 export type ChatCompositeClientState = {
@@ -317,16 +318,16 @@ export type ChatCompositeClientState = {
 };
 
 // @public (undocumented)
-export type ChatOptions = {
-    sendBoxMaxLength?: number;
-};
-
-// @public (undocumented)
-export type ChatProps = {
+export type ChatCompositeProps = {
     adapter: ChatAdapter;
     fluentTheme?: PartialTheme | Theme;
     onRenderAvatar?: (userId: string) => JSX.Element;
     options?: ChatOptions;
+};
+
+// @public (undocumented)
+export type ChatOptions = {
+    sendBoxMaxLength?: number;
 };
 
 // @public (undocumented)
