@@ -5,7 +5,7 @@ import { SendBox, TypingIndicator, MessageThread } from 'react-components';
 import { Stack } from '@fluentui/react';
 import React, { useEffect } from 'react';
 import { chatAreaContainerStyle, sendBoxParentStyle } from './styles/ChatArea.styles';
-import { useChatPropsFor as usePropsFor } from '@azure/acs-chat-selector';
+import { useChatPropsFor as usePropsFor, useChatThreadClient } from '@azure/acs-chat-selector';
 
 export interface ChatAreaProps {
   onRenderAvatar?: (userId: string) => JSX.Element;
@@ -28,6 +28,27 @@ export const ChatArea = (props: ChatAreaProps): JSX.Element => {
       await onLoadPreviousChatMessages(5);
     })();
   }, [onLoadPreviousChatMessages]);
+
+  const chatThreadClient = useChatThreadClient();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const threadId = urlParams.get('send');
+    if (threadId) {
+      let i = 0;
+      while (i < 10000) {
+        ((i) => {
+          setTimeout(() => {
+            chatThreadClient.sendMessage({
+              content: i.toString()
+            });
+            // console.log(i, chatThreadClient);
+          }, 1000 * i);
+        })(i++);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Stack className={chatAreaContainerStyle}>
