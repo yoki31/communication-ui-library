@@ -23,14 +23,7 @@ import { ChatBaseSelectorProps } from './baseSelectors';
 // @ts-ignore
 import { memoizeFnAll } from 'acs-ui-common';
 // @ts-ignore
-import {
-  ChatMessage,
-  MessageAttachedStatus,
-  Message,
-  MessageTypes,
-  SystemMessage,
-  CommunicationParticipant
-} from 'react-components';
+import { ChatMessage, MessageAttachedStatus, SystemMessage } from 'react-components';
 // @ts-ignore
 import { createSelector } from 'reselect';
 // @ts-ignore
@@ -108,7 +101,6 @@ export const chatThreadSelector = createSelector(
   [getUserId, getChatMessages, getLatestReadTime, getIsLargeGroup],
   (userId, chatMessages, latestReadTime, isLargeGroup) => {
     // A function takes parameter above and generate return value
-    console.log(chatMessages);
     const convertedMessages = memoizedAllConvertChatMessage((memoizedFn) =>
       Array.from(chatMessages.values()).map((message) =>
         memoizedFn(
