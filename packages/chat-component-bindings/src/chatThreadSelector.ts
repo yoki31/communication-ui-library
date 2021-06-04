@@ -25,6 +25,8 @@ import { memoizeFnAll } from 'acs-ui-common';
 // @ts-ignore
 import { ChatMessage, MessageAttachedStatus, SystemMessage } from 'react-components';
 // @ts-ignore
+import { Message } from 'react-components';
+// @ts-ignore
 import { createSelector } from 'reselect';
 // @ts-ignore
 import { compareMessages } from './utils/compareMessages';
