@@ -8,7 +8,8 @@ import {
   IButtonProps,
   Label,
   concatStyleSets,
-  mergeStyles
+  mergeStyles,
+  IContextualMenuItem
 } from '@fluentui/react';
 import { MoreIcon } from '@fluentui/react-northstar';
 import { controlButtonLabelStyles, controlButtonStyles } from './styles/ControlBar.styles';
@@ -56,7 +57,7 @@ const generateDefaultMenuProps = (props: OptionsButtonProps): { items: Array<any
     onSelectSpeaker
   } = props;
 
-  const defaultMenuProps: { items: Array<any> } = { items: [] };
+  const defaultMenuProps: { items: Array<IContextualMenuItem> } = { items: [] };
 
   if (cameras && selectedCamera && onSelectCamera) {
     defaultMenuProps.items.push({
@@ -70,7 +71,9 @@ const generateDefaultMenuProps = (props: OptionsButtonProps): { items: Array<any
           iconProps: { iconName: 'Camera' },
           canCheck: true,
           isChecked: camera.id === selectedCamera?.id,
-          onClick: () => !(camera.id === selectedCamera?.id) && onSelectCamera(camera)
+          onClick: () => {
+            !(camera.id === selectedCamera?.id) && onSelectCamera(camera);
+          }
         })),
         title: 'Camera'
       }
@@ -89,7 +92,9 @@ const generateDefaultMenuProps = (props: OptionsButtonProps): { items: Array<any
           iconProps: { iconName: 'Microphone' },
           canCheck: true,
           isChecked: microphone.id === selectedMicrophone?.id,
-          onClick: () => !(microphone.id === selectedMicrophone?.id) && onSelectMicrophone(microphone)
+          onClick: () => {
+            !(microphone.id === selectedMicrophone?.id) && onSelectMicrophone(microphone);
+          }
         })),
         title: 'Microphone'
       }
@@ -108,7 +113,9 @@ const generateDefaultMenuProps = (props: OptionsButtonProps): { items: Array<any
           iconProps: { iconName: 'Volume2' },
           canCheck: true,
           isChecked: speaker.id === selectedSpeaker?.id,
-          onClick: () => !(speaker.id === selectedSpeaker?.id) && onSelectSpeaker(speaker)
+          onClick: () => {
+            !(speaker.id === selectedSpeaker?.id) && onSelectSpeaker(speaker);
+          }
         })),
         title: 'Speaker'
       }
