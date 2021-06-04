@@ -53,56 +53,56 @@ const generateDefaultMenuProps = (props: OptionsButtonProps): { items: Array<any
 
   if (cameras && selectedCamera && onSelectCamera) {
     defaultMenuProps.items.push({
-      key: '1',
-      name: 'Choose Camera',
-      iconProps: { iconName: 'LocationCircle' },
-      subMenuProps: {
-        items: cameras.map((val) => ({
-          key: val.id,
-          text: val.name,
-          title: val.name,
-          canCheck: true,
-          isChecked: val.id === selectedCamera?.id,
-          onClick: () => !(val.id === selectedCamera?.id) && onSelectCamera(val)
-        }))
-      }
+      key: 'sectionCamera',
+      text: 'Camera',
+      title: 'Camera'
     });
+    const cameraMenuItems = cameras.map((camera) => ({
+      key: `camera${camera.id}`,
+      text: camera.name,
+      title: camera.name,
+      iconProps: { iconName: 'Camera' },
+      canCheck: true,
+      isChecked: camera.id === selectedCamera?.id,
+      onClick: () => !(camera.id === selectedCamera?.id) && onSelectCamera(camera)
+    }));
+    defaultMenuProps.items.push(...cameraMenuItems);
   }
 
   if (microphones && selectedMicrophone && onSelectMicrophone) {
     defaultMenuProps.items.push({
-      key: '2',
-      name: 'Choose Microphone',
-      iconProps: { iconName: 'LocationCircle' },
-      subMenuProps: {
-        items: microphones.map((val) => ({
-          key: val.id,
-          text: val.name,
-          title: val.name,
-          canCheck: true,
-          isChecked: val.id === selectedMicrophone?.id,
-          onClick: () => !(val.id === selectedMicrophone?.id) && onSelectMicrophone(val)
-        }))
-      }
+      key: 'sectionMicrophone',
+      text: 'Microphone',
+      title: 'Microphone'
     });
+    const microphoneMenuProps = microphones.map((microphone) => ({
+      key: `microphone${microphone.id}`,
+      text: microphone.name,
+      title: microphone.name,
+      iconProps: { iconName: 'Microphone' },
+      canCheck: true,
+      isChecked: microphone.id === selectedMicrophone?.id,
+      onClick: () => !(microphone.id === selectedMicrophone?.id) && onSelectMicrophone(microphone)
+    }));
+    defaultMenuProps.items.push(...microphoneMenuProps);
   }
 
   if (speakers && selectedSpeaker && onSelectSpeaker) {
     defaultMenuProps.items.push({
-      key: '3',
-      name: 'Choose Speaker',
-      iconProps: { iconName: 'LocationCircle' },
-      subMenuProps: {
-        items: speakers.map((val) => ({
-          key: val.id,
-          text: val.name,
-          title: val.name,
-          canCheck: true,
-          isChecked: val.id === selectedSpeaker?.id,
-          onClick: () => !(val.id === selectedSpeaker?.id) && onSelectSpeaker(val)
-        }))
-      }
+      key: 'sectionSpeaker',
+      text: 'Speaker',
+      title: 'Speaker'
     });
+    const speakerMenuProps = speakers.map((speaker) => ({
+      key: `speaker${speaker.id}`,
+      text: speaker.name,
+      title: speaker.name,
+      iconProps: { iconName: 'Volume2' },
+      canCheck: true,
+      isChecked: speaker.id === selectedSpeaker?.id,
+      onClick: () => !(speaker.id === selectedSpeaker?.id) && onSelectSpeaker(speaker)
+    }));
+    defaultMenuProps.items.push(...speakerMenuProps);
   }
 
   return defaultMenuProps;
@@ -129,7 +129,7 @@ export const OptionsButton = (props: OptionsButtonProps): JSX.Element => {
   const defaultRenderText = (props?: IButtonProps): JSX.Element => {
     return (
       <Label key={'optionsLabelKey'} className={mergeStyles(controlButtonLabelStyles, props?.styles?.label)}>
-        {'Options'}
+        {'Settings'}
       </Label>
     );
   };
