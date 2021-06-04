@@ -2,7 +2,14 @@
 // Licensed under the MIT license.
 
 import React from 'react';
-import { DefaultButton, IButtonProps, Label, concatStyleSets, mergeStyles } from '@fluentui/react';
+import {
+  ContextualMenuItemType,
+  DefaultButton,
+  IButtonProps,
+  Label,
+  concatStyleSets,
+  mergeStyles
+} from '@fluentui/react';
 import { MoreIcon } from '@fluentui/react-northstar';
 import { controlButtonLabelStyles, controlButtonStyles } from './styles/ControlBar.styles';
 
@@ -54,55 +61,58 @@ const generateDefaultMenuProps = (props: OptionsButtonProps): { items: Array<any
   if (cameras && selectedCamera && onSelectCamera) {
     defaultMenuProps.items.push({
       key: 'sectionCamera',
-      text: 'Camera',
-      title: 'Camera'
+      itemType: ContextualMenuItemType.Section,
+      sectionProps: {
+        items: cameras.map((camera) => ({
+          key: `camera${camera.id}`,
+          text: camera.name,
+          title: camera.name,
+          iconProps: { iconName: 'Camera' },
+          canCheck: true,
+          isChecked: camera.id === selectedCamera?.id,
+          onClick: () => !(camera.id === selectedCamera?.id) && onSelectCamera(camera)
+        })),
+        title: 'Camera'
+      }
     });
-    const cameraMenuItems = cameras.map((camera) => ({
-      key: `camera${camera.id}`,
-      text: camera.name,
-      title: camera.name,
-      iconProps: { iconName: 'Camera' },
-      canCheck: true,
-      isChecked: camera.id === selectedCamera?.id,
-      onClick: () => !(camera.id === selectedCamera?.id) && onSelectCamera(camera)
-    }));
-    defaultMenuProps.items.push(...cameraMenuItems);
   }
 
   if (microphones && selectedMicrophone && onSelectMicrophone) {
     defaultMenuProps.items.push({
       key: 'sectionMicrophone',
-      text: 'Microphone',
-      title: 'Microphone'
+      itemType: ContextualMenuItemType.Section,
+      sectionProps: {
+        items: microphones.map((microphone) => ({
+          key: `microphone${microphone.id}`,
+          text: microphone.name,
+          title: microphone.name,
+          iconProps: { iconName: 'Microphone' },
+          canCheck: true,
+          isChecked: microphone.id === selectedMicrophone?.id,
+          onClick: () => !(microphone.id === selectedMicrophone?.id) && onSelectMicrophone(microphone)
+        })),
+        title: 'Microphone'
+      }
     });
-    const microphoneMenuProps = microphones.map((microphone) => ({
-      key: `microphone${microphone.id}`,
-      text: microphone.name,
-      title: microphone.name,
-      iconProps: { iconName: 'Microphone' },
-      canCheck: true,
-      isChecked: microphone.id === selectedMicrophone?.id,
-      onClick: () => !(microphone.id === selectedMicrophone?.id) && onSelectMicrophone(microphone)
-    }));
-    defaultMenuProps.items.push(...microphoneMenuProps);
   }
 
   if (speakers && selectedSpeaker && onSelectSpeaker) {
     defaultMenuProps.items.push({
       key: 'sectionSpeaker',
-      text: 'Speaker',
-      title: 'Speaker'
+      itemType: ContextualMenuItemType.Section,
+      sectionProps: {
+        items: speakers.map((speaker) => ({
+          key: `speaker${speaker.id}`,
+          text: speaker.name,
+          title: speaker.name,
+          iconProps: { iconName: 'Volume2' },
+          canCheck: true,
+          isChecked: speaker.id === selectedSpeaker?.id,
+          onClick: () => !(speaker.id === selectedSpeaker?.id) && onSelectSpeaker(speaker)
+        })),
+        title: 'Speaker'
+      }
     });
-    const speakerMenuProps = speakers.map((speaker) => ({
-      key: `speaker${speaker.id}`,
-      text: speaker.name,
-      title: speaker.name,
-      iconProps: { iconName: 'Volume2' },
-      canCheck: true,
-      isChecked: speaker.id === selectedSpeaker?.id,
-      onClick: () => !(speaker.id === selectedSpeaker?.id) && onSelectSpeaker(speaker)
-    }));
-    defaultMenuProps.items.push(...speakerMenuProps);
   }
 
   return defaultMenuProps;
