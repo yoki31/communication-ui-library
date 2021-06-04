@@ -2,10 +2,18 @@
 // Licensed under the MIT license.
 
 import { MessageStatus } from 'acs-ui-common';
+import { CommunicationParticipant } from './CommunicationParticipant';
 
 export type MessageAttachedStatus = 'bottom' | 'top';
 
-export type MessageContentType = 'text' | 'html' | 'richtext/html' | 'unknown';
+export type MessageContentType =
+  | 'text'
+  | 'html'
+  | 'richtext/html'
+  | 'topicupdated'
+  | 'participantadded'
+  | 'participantremoved'
+  | 'unknown';
 
 export type ChatMessagePayload = {
   messageId?: string;
@@ -23,13 +31,18 @@ export type ChatMessagePayload = {
 
 export type SystemMessagePayload = {
   messageId: string;
-  content?: string;
+  type: MessageContentType;
+  content?: CommunicationParticipant[] | string;
   iconName?: string;
+  createdOn?: Date;
+  senderId?: string;
 };
 
 export type CustomMessagePayload = {
   messageId: string;
   content?: string;
+  createdOn?: Date;
+  senderId?: string;
 };
 
 export type MessageTypes = 'chat' | 'system' | 'custom';

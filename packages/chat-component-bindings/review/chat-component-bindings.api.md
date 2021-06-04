@@ -57,11 +57,11 @@ export type ChatThreadClientProviderProps = {
 export const chatThreadSelector: reselect.OutputParametricSelector<ChatClientState, ChatBaseSelectorProps, {
     userId: string;
     showMessageStatus: boolean;
-    messages: Message<"chat">[];
+    messages: (Message<"chat"> | Message<"system">)[];
 }, (res1: string, res2: Map<string, ChatMessageWithStatus>, res3: Date, res4: boolean) => {
     userId: string;
     showMessageStatus: boolean;
-    messages: Message<"chat">[];
+    messages: (Message<"chat"> | Message<"system">)[];
 }>;
 
 // @public (undocumented)

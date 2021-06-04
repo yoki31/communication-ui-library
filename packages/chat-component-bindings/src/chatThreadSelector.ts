@@ -23,7 +23,14 @@ import { ChatBaseSelectorProps } from './baseSelectors';
 // @ts-ignore
 import { memoizeFnAll } from 'acs-ui-common';
 // @ts-ignore
-import { ChatMessage, MessageAttachedStatus, Message, MessageTypes } from 'react-components';
+import {
+  ChatMessage,
+  MessageAttachedStatus,
+  Message,
+  MessageTypes,
+  SystemMessage,
+  CommunicationParticipant
+} from 'react-components';
 // @ts-ignore
 import { createSelector } from 'reselect';
 // @ts-ignore
@@ -32,46 +39,86 @@ import { compareMessages } from './utils/compareMessages';
 const memoizedAllConvertChatMessage = memoizeFnAll(
   (
     _key: string,
-    chatMessage: ChatMessageWithStatus,
+    message: ChatMessageWithStatus,
     userId: string,
     isSeen: boolean,
     isLargeGroup: boolean
-  ): ChatMessage => ({
-    type: 'chat',
-    payload: {
-      createdOn: chatMessage.createdOn,
-      content: chatMessage.content?.message,
-      type: sanitizedMessageContentType(chatMessage.type),
-      status: !isLargeGroup && chatMessage.status === 'delivered' && isSeen ? 'seen' : chatMessage.status,
-      senderDisplayName: chatMessage.senderDisplayName,
-      senderId: chatMessage.sender !== undefined ? toFlatCommunicationIdentifier(chatMessage.sender) : userId,
-      messageId: chatMessage.id,
-      clientMessageId: chatMessage.clientMessageId
+  ): ChatMessage | SystemMessage => {
+    const messageType = sanitizedMessageContentType(message.type);
+
+    if (messageType === 'text' || messageType === 'html' || messageType === 'richtext/html') {
+      return {
+        type: 'chat',
+        payload: {
+          createdOn: message.createdOn,
+          content: message.content?.message,
+          type: messageType,
+          status: !isLargeGroup && message.status === 'delivered' && isSeen ? 'seen' : message.status,
+          senderDisplayName: message.senderDisplayName,
+          senderId: message.sender !== undefined ? toFlatCommunicationIdentifier(message.sender) : userId,
+          messageId: message.id,
+          clientMessageId: message.clientMessageId
+        }
+      };
+    } else if (messageType === 'topicupdated') {
+      return {
+        type: 'system',
+        payload: {
+          messageId: message.id,
+          content: message.content?.topic,
+          type: messageType,
+          createdOn: message.createdOn,
+          senderId: message.sender !== undefined ? toFlatCommunicationIdentifier(message.sender) : undefined,
+          iconName: 'Edit'
+        }
+      };
+    } else if (messageType === 'participantadded' || messageType === 'participantremoved') {
+      const communicationParticipants = message.content?.participants?.map((participant: ChatParticipant) => {
+        return {
+          userId: toFlatCommunicationIdentifier(participant.id),
+          displayName: participant.displayName
+        };
+      });
+
+      return {
+        type: 'system',
+        payload: {
+          messageId: message.id,
+          content: communicationParticipants ?? [],
+          type: messageType,
+          createdOn: message.createdOn,
+          senderId: message.sender !== undefined ? toFlatCommunicationIdentifier(message.sender) : undefined,
+          iconName: messageType === 'participantadded' ? 'PeopleAdd' : 'PeopleBlock'
+        }
+      };
+    } else {
+      // If we encounter unknown messge, we'll create an chat message with unknown type.
+      // This will be automatically handled in the MessageThread component.
+      return {
+        type: 'chat',
+        payload: {
+          type: 'unknown'
+        }
+      };
     }
-  })
+  }
 );
 
 export const chatThreadSelector = createSelector(
   [getUserId, getChatMessages, getLatestReadTime, getIsLargeGroup],
   (userId, chatMessages, latestReadTime, isLargeGroup) => {
     // A function takes parameter above and generate return value
+    console.log(chatMessages);
     const convertedMessages = memoizedAllConvertChatMessage((memoizedFn) =>
-      Array.from(chatMessages.values())
-        .filter(
-          (message) =>
-            message.type.toLowerCase() === 'text' ||
-            message.type.toLowerCase() === 'richtext/html' ||
-            message.clientMessageId !== undefined
+      Array.from(chatMessages.values()).map((message) =>
+        memoizedFn(
+          message.id ?? message.clientMessageId,
+          message,
+          userId,
+          message.createdOn <= latestReadTime,
+          isLargeGroup
         )
-        .map((message) =>
-          memoizedFn(
-            message.id ?? message.clientMessageId,
-            message,
-            userId,
-            message.createdOn <= latestReadTime,
-            isLargeGroup
-          )
-        )
+      )
     );
 
     updateMessagesWithAttached(convertedMessages, userId);
@@ -83,52 +130,29 @@ export const chatThreadSelector = createSelector(
   }
 );
 
-export const updateMessagesWithAttached = (chatMessagesWithStatus: ChatMessage[], userId: string): void => {
+export const updateMessagesWithAttached = (
+  chatMessagesWithStatus: (ChatMessage | SystemMessage)[],
+  userId: string
+): void => {
   chatMessagesWithStatus.sort(compareMessages);
 
   chatMessagesWithStatus.forEach((message, index, messages) => {
-    const mine = message.payload.senderId === userId;
-    /**
-     * A block of messages: continuous messages that belong to the same sender and not intercepted by other senders.
-     *
-     * Attacthed is the index of the last message in the previous block of messages which mine===true.
-     * This message's statusToRender will be reset when there's a new block of messages which mine===true. (Because
-     * in this case, we only want to show the read statusToRender of last message of the new messages block)
-     */
-    let attached: boolean | MessageAttachedStatus = false;
-    if (index === 0) {
-      if (index !== messages.length - 1) {
-        //the next message has the same sender
-        if (messages[index].payload.senderId === messages[index + 1].payload.senderId) {
+    if (message.type === 'chat') {
+      let attached: boolean | MessageAttachedStatus = false;
+
+      const previousMessageSenderId = index > 0 ? messages[index - 1].payload.senderId : null;
+      const nextMessageSenderId = index === messages.length - 1 ? null : messages[index + 1].payload.senderId;
+
+      if (message.payload.senderId !== previousMessageSenderId) {
+        if (message.payload.senderId === nextMessageSenderId) {
           attached = 'top';
         }
-      }
-    } else {
-      if (messages[index].payload.senderId === messages[index - 1].payload.senderId) {
-        //the previous message has the same sender
-        if (index !== messages.length - 1) {
-          if (messages[index].payload.senderId === messages[index + 1].payload.senderId) {
-            //the next message has the same sender
-            attached = true;
-          } else {
-            //the next message has a different sender
-            attached = 'bottom';
-          }
-        } else {
-          // this is the last message of the whole messages list
-          attached = 'bottom';
-        }
       } else {
-        //the previous message has a different sender
-        if (index !== messages.length - 1) {
-          if (messages[index].payload.senderId === messages[index + 1].payload.senderId) {
-            //the next message has the same sender
-            attached = 'top';
-          }
-        }
+        attached = message.payload.senderId === nextMessageSenderId ? true : 'bottom';
       }
+
+      message.payload.attached = attached;
+      message.payload.mine = message.payload.senderId === userId;
     }
-    message.payload.attached = attached;
-    message.payload.mine = mine;
   });
 };

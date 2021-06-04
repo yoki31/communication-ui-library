@@ -47,7 +47,12 @@ export const getTypingIndicators = (
 
 export const sanitizedMessageContentType = (type: string): MessageContentType => {
   const lowerCaseType = type.toLowerCase();
-  return lowerCaseType === 'text' || lowerCaseType === 'html' || lowerCaseType === 'richtext/html'
+  return lowerCaseType === 'text' ||
+    lowerCaseType === 'html' ||
+    lowerCaseType === 'richtext/html' ||
+    lowerCaseType === 'topicupdated' ||
+    lowerCaseType === 'participantadded' ||
+    lowerCaseType === 'participantremoved'
     ? lowerCaseType
     : 'unknown';
 };

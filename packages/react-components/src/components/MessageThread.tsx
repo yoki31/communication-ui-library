@@ -26,7 +26,8 @@ import {
   CustomMessage,
   SystemMessage,
   ChatMessagePayload,
-  SystemMessagePayload
+  SystemMessagePayload,
+  CommunicationParticipant
 } from '../types';
 import { MessageStatusIndicator, MessageStatusIndicatorProps } from './MessageStatusIndicator';
 import { memoizeFnAll, MessageStatus } from 'acs-ui-common';
@@ -125,6 +126,17 @@ const didUserSendTheLatestMessage = (
   }
 };
 
+const defaultSystemMessageContentBuilder = (payload: SystemMessagePayload): string => {
+  if (payload.type === 'participantadded' || payload.type === 'participantremoved') {
+    const participants = payload.content;
+    if (Array.isArray(participants)) {
+      const displayNameList = participants.map((participant: CommunicationParticipant) => participant.displayName);
+      return payload.type + ': ' + displayNameList.toString();
+    }
+  }
+  return payload.type + ': ' + payload.content;
+};
+
 export interface MessageThreadStylesProps extends BaseCustomStylesProps {
   /** Styles for load previous messages container. */
   loadPreviousMessagesButtonContainer?: IStyle;
@@ -162,7 +174,7 @@ const DefaultSystemMessageRenderer: DefaultMessageRendererType = (props: Message
     return (
       <SystemMessageComponent
         iconName={(payload.iconName ?? '') as SystemMessageIconTypes}
-        content={payload.content ?? ''}
+        content={defaultSystemMessageContentBuilder(props.message.payload)}
         containerStyle={props?.messageContainerStyle}
       />
     );
@@ -212,7 +224,7 @@ const generateTextMessageContent = (payload: ChatMessagePayload): JSX.Element =>
   );
 };
 
-const generateMessageContent = (payload: ChatMessagePayload) => {
+const generateMessageContent = (payload: ChatMessagePayload): JSX.Element => {
   switch (payload.type) {
     case 'text':
       return generateTextMessageContent(payload);

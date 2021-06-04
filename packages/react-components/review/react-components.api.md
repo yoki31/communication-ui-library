@@ -91,6 +91,8 @@ export type CustomMessage = Message<'custom'>;
 export type CustomMessagePayload = {
     messageId: string;
     content?: string;
+    createdOn?: Date;
+    senderId?: string;
 };
 
 // @public
@@ -151,7 +153,7 @@ export type Message<T extends MessageTypes> = {
 export type MessageAttachedStatus = 'bottom' | 'top';
 
 // @public (undocumented)
-export type MessageContentType = 'text' | 'html' | 'richtext/html' | 'unknown';
+export type MessageContentType = 'text' | 'html' | 'richtext/html' | 'topicupdated' | 'participantadded' | 'participantremoved' | 'unknown';
 
 // @public
 export type MessageProps = {
@@ -366,8 +368,11 @@ export type SystemMessage = Message<'system'>;
 // @public (undocumented)
 export type SystemMessagePayload = {
     messageId: string;
-    content?: string;
+    type: MessageContentType;
+    content?: CommunicationParticipant[] | string;
     iconName?: string;
+    createdOn?: Date;
+    senderId?: string;
 };
 
 // @public
