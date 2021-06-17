@@ -7,7 +7,8 @@
     "lint": "",
     "lint:fix": "",
     "build": "",
-    "test": ""
+    "test": "",
+    "addsideeffects": "node ./add-side-effects.js"
   },
   "devDependencies": {
     "@octokit/rest": "~18.0.6",
