@@ -30,9 +30,7 @@ export const callControlsContainer = mergeStyles({
 export const containerStyles: IStackStyles = {
   root: {
     height: '100%',
-    width: '100%',
-    flexDirection: 'column',
-    display: 'flex'
+    width: '100%'
   }
 };
 
