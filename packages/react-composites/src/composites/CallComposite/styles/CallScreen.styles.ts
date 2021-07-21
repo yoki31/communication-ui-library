@@ -44,11 +44,10 @@ export const subContainerStyles: IStackStyles = {
   }
 };
 
-export const activeContainerClassName: IStackItemStyles = {
+export const mediaGalleryContainerStyles: IStackItemStyles = {
   root: {
-    display: 'flex',
     height: '100%',
-    position: 'relative'
+    width: '100%'
   }
 };
 
