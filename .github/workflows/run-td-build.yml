@@ -1,6 +1,7 @@
 name: Run Touchdown build and commit changes
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       branch:
