@@ -2,11 +2,12 @@ name: Update Touchdown build
 
 on:
   push:
-    branches: [main]
+    branches: [mgamis/test-pipeline]
     paths:
       [
         packages/react-components/src/localization/locales/en-US/strings.json,
-        packages/react-composites/src/composites/localization/locales/en-US/strings.json
+        packages/react-composites/src/composites/localization/locales/en-US/strings.json,
+        packages/react-components/src/localization/locales/en-US/test.txt
       ]
 
 jobs:
